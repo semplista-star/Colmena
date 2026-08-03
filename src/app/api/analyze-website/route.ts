@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   const message = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 3000,
+    max_tokens: 4096,
     tools: [{ type: "web_search_20250305", name: "web_search" }],
     messages: [
       {
@@ -33,7 +33,8 @@ Devuelve SOLO un JSON (sin texto extra, sin markdown) con esta forma exacta:
   ]
 }
 Incluye entre 4 y 6 segmentos de cliente potencial, ordenados de mayor a menor fitScore.
-"reasoning" debe ser breve: máximo 2 frases cortas por segmento.`,
+"reasoning": UNA sola frase, máximo 20 palabras, con tus propias palabras — sin citas textuales ni comillas largas.
+"description": máximo 40 palabras.`,
       },
     ],
   });
@@ -47,7 +48,11 @@ Incluye entre 4 y 6 segmentos de cliente potencial, ordenados de mayor a menor f
     parsedJson = JSON.parse(clean);
   } catch (e) {
     return NextResponse.json(
-      { error: "No se pudo parsear la respuesta de la IA", raw },
+      {
+        error: "No se pudo parsear la respuesta de la IA",
+        truncated: message.stop_reason === "max_tokens",
+        raw,
+      },
       { status: 502 }
     );
   }
