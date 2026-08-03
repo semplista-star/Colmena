@@ -30,19 +30,19 @@ export const AGENTS: AgentDef[] = [
     id: "AG-03", name: "Radar", dept: "inteligencia",
     summary: "Detecta señales de compra (funding, contrataciones, expansión).",
     systemPrompt: "Vigilas fuentes públicas (noticias, LinkedIn, registros mercantiles) para detectar eventos que indiquen que una empresa está lista para comprar.",
-    status: "planned", // requiere API de noticias/LinkedIn + cron job
+    status: "stub", // => /api/agents/market-signals (simulado; falta API de noticias/LinkedIn real)
   },
   {
     id: "AG-04", name: "Enriquecedor", dept: "inteligencia",
     summary: "Completa datos de contacto y empresa.",
     systemPrompt: "Dado un nombre de empresa o persona, resuelve email profesional, cargo y tamaño de empresa contra fuentes de datos B2B.",
-    status: "planned", // requiere API tipo Apollo/Clearbit
+    status: "stub", // => /api/agents/enrich-lead (simulado; falta APOLLO_API_KEY)
   },
   {
     id: "AG-05", name: "Vigía", dept: "inteligencia",
     summary: "Monitoriza cambios en prospectos ya identificados.",
     systemPrompt: "Revisas periódicamente la web y perfiles públicos de un prospecto y avisas si hay cambios relevantes para retomar el contacto.",
-    status: "planned",
+    status: "stub", // => /api/agents/watch-prospect (simulado; falta fuente de monitorización real)
   },
   {
     id: "AG-06", name: "Redactor", dept: "prospeccion",
@@ -60,7 +60,7 @@ export const AGENTS: AgentDef[] = [
     id: "AG-08", name: "Buzón", dept: "prospeccion",
     summary: "Calienta dominios y protege la reputación de envío.",
     systemPrompt: "N/A — este agente es principalmente infraestructura (SPF/DKIM/DMARC + rotación), no un agente conversacional puro.",
-    status: "planned", // requiere proveedor de email transaccional
+    status: "stub", // => /api/agents/inbox-health (SPF/DMARC reales vía DNS; DKIM y calentado de dominio requieren RESEND_API_KEY)
   },
   {
     id: "AG-09", name: "Conserje", dept: "prospeccion",
@@ -72,7 +72,7 @@ export const AGENTS: AgentDef[] = [
     id: "AG-10", name: "Agenda", dept: "prospeccion",
     summary: "Reserva la reunión en el calendario.",
     systemPrompt: "Cuando un lead confirma interés, ofreces huecos disponibles y confirmas la reunión vía la API de calendario conectada.",
-    status: "planned", // requiere Cal.com/Calendly API
+    status: "stub", // => /api/agents/book-meeting (simulado; falta CALCOM_API_KEY)
   },
   {
     id: "AG-11", name: "Meta", dept: "ads",
@@ -96,19 +96,19 @@ export const AGENTS: AgentDef[] = [
     id: "AG-14", name: "Puja", dept: "ads",
     summary: "Ajusta presupuesto y pujas según rendimiento.",
     systemPrompt: "Con los datos de rendimiento de las últimas 72h, decides si subir, bajar o mantener presupuesto por campaña.",
-    status: "planned",
+    status: "stub", // => /api/agents/bid-adjustment (lógica real; falta META/LINKEDIN token para leer el gasto en automático)
   },
   {
     id: "AG-15", name: "Píxel", dept: "ads",
     summary: "Configura el tracking de conversiones.",
     systemPrompt: "N/A — agente de configuración técnica (Meta Pixel / LinkedIn Insight Tag + eventos de conversión), no conversacional.",
-    status: "planned",
+    status: "stub", // => /api/agents/pixel-setup (simulado; falta META_ACCESS_TOKEN/LINKEDIN_ACCESS_TOKEN)
   },
   {
     id: "AG-16", name: "Contable", dept: "operaciones",
     summary: "Calcula coste por lead y ROI por campaña.",
     systemPrompt: "Calculas coste por lead, coste por reunión y ROI estimado a partir de los logs de gasto y conversión.",
-    status: "planned",
+    status: "stub", // => /api/agents/roi-report (cálculo real; falta META/LINKEDIN token para leer el gasto en automático)
   },
   {
     id: "AG-17", name: "Semáforo", dept: "operaciones",
@@ -120,7 +120,7 @@ export const AGENTS: AgentDef[] = [
     id: "AG-18", name: "CRM", dept: "operaciones",
     summary: "Sincroniza leads con el CRM del cliente.",
     systemPrompt: "N/A — agente de integración (HubSpot/Pipedrive/Salesforce API), no conversacional.",
-    status: "planned",
+    status: "stub", // => /api/agents/crm-sync (simulado; falta HUBSPOT_API_KEY/PIPEDRIVE_API_KEY/SALESFORCE_API_KEY)
   },
   {
     id: "AG-19", name: "Cumplimiento", dept: "operaciones",

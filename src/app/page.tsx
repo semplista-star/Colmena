@@ -1,4 +1,5 @@
 import { AGENTS, AgentDept } from "@/lib/agents";
+import CheckoutButton from "@/components/CheckoutButton";
 
 const DEPT_LABELS: Record<AgentDept, { range: string; title: string }> = {
   inteligencia: { range: "01—05", title: "Inteligencia de mercado" },
@@ -102,7 +103,7 @@ export default function Home() {
                 <li>Email + Meta Ads + LinkedIn Ads</li>
                 <li>Soporte por email</li>
               </ul>
-              <a href="#precios" className="btn-ghost">Contratar</a>
+              <CheckoutButton plan="semiannual" label="Contratar" variant="ghost" />
             </div>
             <div className="price-card featured">
               <div className="badge">2 MESES GRATIS</div>
@@ -113,11 +114,11 @@ export default function Home() {
                 <li>Email + Meta Ads + LinkedIn Ads</li>
                 <li>Soporte prioritario</li>
               </ul>
-              <a href="#precios" className="btn-primary">Contratar</a>
+              <CheckoutButton plan="annual" label="Contratar" variant="primary" />
             </div>
           </div>
           <p style={{ color: "var(--text-dim)", fontSize: 13, marginTop: 18 }}>
-            Botón de pago funcional en cuanto conectemos Stripe (ver README) — la ruta <code>/api/billing/checkout</code> ya está lista.
+            El botón "Contratar" ya llama de verdad a Stripe Checkout — solo hace falta tener <code>STRIPE_SECRET_KEY</code> y los price IDs configurados (ver README).
           </p>
         </div>
       </section>
