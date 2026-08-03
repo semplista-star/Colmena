@@ -18,7 +18,9 @@ jobs:
         with:
           node-version: 20
 
-      - run: npm ci
+      # No hay package-lock.json commiteado todavía (npm ci lo exige y falla sin él),
+      # así que usamos npm install y guardamos el lockfile que genera para el futuro.
+      - run: npm install
 
       # Intento "real": crea el historial de migraciones (prisma/migrations/*_init).
       # Necesita permiso para crear una shadow DB temporal en Supabase.
@@ -39,11 +41,11 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
 
-      - name: Commit migration files (si se generaron)
-        if: steps.migrate.outcome == 'success'
+      - name: Commit lockfile y migraciones generadas
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add prisma/migrations
-          git diff --cached --quiet || git commit -m "chore: initial prisma migration"
+          git add package-lock.json prisma/migrations 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "chore: package-lock.json + migración inicial de prisma"
           git diff --cached --quiet || git push
