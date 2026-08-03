@@ -20,7 +20,7 @@ export function seededRandom(seed: string): () => number {
   };
 }
 
-export function pick<T>(rand: () => number, arr: T[]): T {
+export function pick<T>(rand: () => number, arr: readonly T[]): T {
   return arr[Math.floor(rand() * arr.length)];
 }
 
