@@ -6,6 +6,7 @@ const DEPT_LABELS: Record<AgentDept, { range: string; title: string }> = {
   prospeccion: { range: "06—10", title: "Prospección directa" },
   ads: { range: "11—15", title: "Publicidad de pago" },
   operaciones: { range: "16—20", title: "Operaciones y reporting" },
+  marketing: { range: "21—25", title: "Marketing de contenido" },
 };
 
 export default function Home() {
@@ -28,12 +29,12 @@ export default function Home() {
 
       <section className="hero">
         <div className="wrap">
-          <div className="eyebrow"><span className="pulse" />20 AGENTES · SIEMPRE ACTIVOS</div>
+          <div className="eyebrow"><span className="pulse" />25 AGENTES · SIEMPRE ACTIVOS</div>
           <h1>Una colmena de agentes de IA que <em>encuentra</em>, <em>convence</em> y <em>agenda</em> a tus próximos clientes.</h1>
           <p className="lead">Colmena analiza tu negocio, encuentra a las personas que sí te van a comprar, les escribe, les lanza anuncios en Meta y LinkedIn, y te trae la reunión agendada. Sin equipo de ventas, sin agencia.</p>
           <div className="ctas">
             <a href="#precios" className="btn-primary">Activar mi colmena</a>
-            <a href="#agentes" className="btn-ghost">Ver los 20 agentes</a>
+            <a href="#agentes" className="btn-ghost">Ver los 25 agentes</a>
           </div>
         </div>
       </section>
@@ -42,7 +43,7 @@ export default function Home() {
         <div className="wrap">
           <div className="hive-header">
             <div className="k">// Plantilla completa</div>
-            <h2>20 agentes especializados, organizados en 4 equipos</h2>
+            <h2>25 agentes especializados, organizados en 5 equipos</h2>
           </div>
 
           {depts.map((dept) => (
@@ -99,7 +100,7 @@ export default function Home() {
               <div className="label">PAGO SEMESTRAL</div>
               <div className="amount">1.500€<span>/6 meses</span></div>
               <ul>
-                <li>Los 20 agentes activos</li>
+                <li>Los 25 agentes activos</li>
                 <li>Email + Meta Ads + LinkedIn Ads</li>
                 <li>Soporte por email</li>
               </ul>
@@ -110,7 +111,7 @@ export default function Home() {
               <div className="label">PAGO ANUAL</div>
               <div className="amount">3.000€<span>/año</span></div>
               <ul>
-                <li>Los 20 agentes activos</li>
+                <li>Los 25 agentes activos</li>
                 <li>Email + Meta Ads + LinkedIn Ads</li>
                 <li>Soporte prioritario</li>
               </ul>

@@ -1,5 +1,6 @@
-// Esquema base para AutoGTM-clone
-// Ejecuta: npx prisma migrate dev --name init
+// Esquema base para Colmena
+// Migraciones (una vez, o cuando cambie el schema): npx prisma migrate deploy
+// Requiere DATABASE_URL (pooled, puerto 6543) y DIRECT_URL (directa, puerto 5432)
 
 generator client {
   provider = "prisma-client-js"

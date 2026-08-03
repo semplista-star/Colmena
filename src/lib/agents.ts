@@ -1,11 +1,11 @@
-// Registro central de los 20 agentes.
+// Registro central de los 25 agentes.
 // Cada agente = un rol + un prompt de sistema. El "orquestador" (fase 2)
 // decide qué agente llamar y en qué orden según el estado del lead/campaña.
 
-export type AgentDept = "inteligencia" | "prospeccion" | "ads" | "operaciones";
+export type AgentDept = "inteligencia" | "prospeccion" | "ads" | "operaciones" | "marketing";
 
 export interface AgentDef {
-  id: string;           // AG-01 ... AG-20
+  id: string;           // AG-01 ... AG-25
   name: string;
   dept: AgentDept;
   summary: string;
@@ -133,5 +133,35 @@ export const AGENTS: AgentDef[] = [
     summary: "Genera el resumen semanal para el cliente.",
     systemPrompt: "Resumes en 5-6 frases claras el rendimiento de la semana: leads generados, reuniones agendadas, coste por lead y una recomendación.",
     status: "stub",
+  },
+  {
+    id: "AG-21", name: "SEO", dept: "marketing",
+    summary: "Auditoría SEO y plan de palabras clave.",
+    systemPrompt: "Eres un consultor SEO senior. Dado un dominio y su descripción, propones un plan de palabras clave priorizadas (volumen estimado, dificultad, intención) y una lista de mejoras on-page concretas.",
+    status: "stub", // => /api/agents/seo-audit — con Search Console/Ahrefs sería "implemented"
+  },
+  {
+    id: "AG-22", name: "SEM", dept: "marketing",
+    summary: "Diseña campañas de Google Ads (búsqueda).",
+    systemPrompt: "Eres un media buyer experto en Google Ads (Search). Diseñas grupos de anuncios, palabras clave (con tipo de concordancia) y copies según el ICP y presupuesto dados.",
+    status: "stub", // => /api/agents/sem-campaign — publicación real pendiente de GOOGLE_ADS_*
+  },
+  {
+    id: "AG-23", name: "Newsletter", dept: "marketing",
+    summary: "Redacta la newsletter periódica a la base de leads/clientes.",
+    systemPrompt: "Eres el redactor de una newsletter B2B. A partir de 2-3 novedades, escribes un email de newsletter completo (asunto, preheader y cuerpo) con un tono cercano y una única llamada a la acción.",
+    status: "stub", // => /api/agents/newsletter — envío real pendiente de proveedor de email marketing
+  },
+  {
+    id: "AG-24", name: "Redes sociales", dept: "marketing",
+    summary: "Genera el calendario y los posts para LinkedIn/Instagram/X.",
+    systemPrompt: "Eres un social media manager B2B/B2C. Generas posts adaptados a cada red (LinkedIn más largo y profesional, Instagram más visual y corto, X muy breve) a partir de un tema o novedad.",
+    status: "stub", // => /api/agents/social-post — publicación real pendiente de token por red
+  },
+  {
+    id: "AG-25", name: "Landing Builder", dept: "marketing",
+    summary: "Genera una landing page a medida por campaña o segmento.",
+    systemPrompt: "Eres un copywriter y diseñador web. Generas el HTML completo de una landing page de una sola sección (hero + beneficios + CTA) coherente con la marca y el segmento de cliente indicado.",
+    status: "implemented", // => /api/agents/generate-landing (genera HTML real con Claude, sin dependencias externas)
   },
 ];

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Colmena — 20 agentes de IA para conseguirte clientes",
+  title: "Colmena — 25 agentes de IA para conseguirte clientes",
   description:
     "Colmena analiza tu negocio, encuentra a las personas que sí te van a comprar, les escribe, lanza anuncios en Meta y LinkedIn, y te trae la reunión agendada.",
 };
