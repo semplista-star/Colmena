@@ -1,0 +1,57 @@
+// Esquema base para AutoGTM-clone
+// Ejecuta: npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id           String    @id @default(cuid())
+  domain       String    @unique
+  companyName  String?
+  description  String?
+  icpProfile   Json?     // perfil ICP generado por IA: {segments: [...], reasoning: "..."}
+  createdAt    DateTime  @default(now())
+  campaigns    Campaign[]
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+  name        String   // ej: "Event designers"
+  status      String   @default("draft") // draft | scaling | working | paused
+  fitScore    Float?
+  costPerLead Float?
+  leads       Lead[]
+  createdAt   DateTime @default(now())
+}
+
+model Lead {
+  id           String   @id @default(cuid())
+  campaignId   String
+  campaign     Campaign @relation(fields: [campaignId], references: [id])
+  fullName     String
+  role         String?
+  companyName  String?
+  email        String
+  fitScore     Float?
+  status       String   @default("new") // new | emailed | replied | booked | rejected
+  emailLogs    EmailLog[]
+  createdAt    DateTime @default(now())
+}
+
+model EmailLog {
+  id         String   @id @default(cuid())
+  leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id])
+  direction  String   // outbound | inbound
+  subject    String?
+  body       String
+  sentAt     DateTime @default(now())
+}
