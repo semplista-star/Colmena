@@ -3,6 +3,10 @@ import { anthropic, MODEL } from "@/lib/anthropic";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
+// Con web_search + una respuesta larga, esta llamada puede tardar más que el
+// timeout por defecto de las funciones de Vercel.
+export const maxDuration = 60;
+
 const bodySchema = z.object({
   domain: z.string().min(3),
 });

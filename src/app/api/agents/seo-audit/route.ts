@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL } from "@/lib/anthropic";
 import { z } from "zod";
 
+// Con web_search esta llamada puede tardar más que el timeout por defecto de Vercel.
+export const maxDuration = 60;
+
 const bodySchema = z.object({
   domain: z.string(),
   description: z.string(),
