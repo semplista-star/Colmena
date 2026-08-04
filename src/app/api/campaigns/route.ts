@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/campaigns?clientId=xxx
 export async function GET(req: NextRequest) {
   const clientId = req.nextUrl.searchParams.get("clientId") ?? undefined;

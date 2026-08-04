@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolveTxt } from "node:dns/promises";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 // GET /api/agents/inbox-health?domain=tuweb.com  (AG-08 Buzón)
 // SPF y DMARC son registros DNS públicos: se comprueban de verdad, sin API key.
