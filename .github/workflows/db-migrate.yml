@@ -24,8 +24,13 @@ jobs:
 
       - run: npm install
 
+      # --accept-data-loss: Prisma pide confirmación interactiva para cualquier
+      # cambio que PODRÍA perder datos (ej. nueva columna @unique). No hay forma
+      # de confirmar interactivamente en CI. ANTES de correr este workflow tras
+      # cambiar el schema, revisa a mano si el cambio real implica borrar una
+      # columna/tabla con datos - si es así, no lo aceptes a ciegas.
       - name: prisma db push
-        run: npx prisma db push
+        run: npx prisma db push --accept-data-loss
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
