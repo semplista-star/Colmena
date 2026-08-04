@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   const message = await anthropic.messages.create({
     model: MODEL,
-    max_tokens: 4096,
+    max_tokens: 8192,
     tools: [{ type: "web_search_20250305", name: "web_search" }],
     messages: [
       {
@@ -32,9 +32,10 @@ Devuelve SOLO un JSON (sin texto extra, sin markdown) con esta forma exacta:
     { "name": string, "fitScore": number (0-100), "reasoning": string }
   ]
 }
-Incluye entre 4 y 6 segmentos de cliente potencial, ordenados de mayor a menor fitScore.
+Incluye EXACTAMENTE 4 segmentos de cliente potencial, ordenados de mayor a menor fitScore.
 "reasoning": UNA sola frase, máximo 20 palabras, con tus propias palabras — sin citas textuales ni comillas largas.
-"description": máximo 40 palabras.`,
+"description": máximo 40 palabras.
+Sé conciso incluso si la empresa tiene mucha información disponible: prioriza brevedad sobre exhaustividad.`,
       },
     ],
   });
