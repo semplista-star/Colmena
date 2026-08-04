@@ -50,6 +50,7 @@ src/
         meta/                     -> AG-11: plan de campana Meta Ads (IA) + publicacion real (pendiente de token)
         linkedin/                 -> AG-12: plan de campana LinkedIn Ads (IA) + publicacion real (pendiente de token)
       billing/checkout/          -> cobro de la licencia (Stripe: 3000E/ano o 1500E/6 meses)
+      billing/webhook/           -> checkout.session.completed -> activa la licencia del Client
       clients/, campaigns/, leads/  -> CRUD sobre la base de datos
       orchestrator/run/           -> recorre los leads activos, decide que agente debe actuar y LO EJECUTA
   lib/
@@ -88,6 +89,7 @@ El **orquestador** (`/api/orchestrator/run`) es el que en produccion ata todo: s
 | `ANTHROPIC_API_KEY` | Todos los agentes de IA | console.anthropic.com -> API Keys |
 | `DATABASE_URL` + `DIRECT_URL` | Toda la persistencia (Supabase) | supabase.com -> Settings -> Database -> Connection string (pooled y direct) |
 | `STRIPE_SECRET_KEY` + `STRIPE_PRICE_ANNUAL` + `STRIPE_PRICE_SEMIANNUAL` | Cobro de la licencia | stripe.com -> Developers -> API Keys, y Product catalog para los precios |
+| `STRIPE_WEBHOOK_SECRET` | Activar la licencia tras el pago | ver sección "Cobro con Stripe" más abajo |
 | `RESEND_API_KEY` | AG-08 Buzon (DKIM + envio real) y AG-23 Newsletter | resend.com -> verificar dominio -> API Keys |
 | `APOLLO_API_KEY` | AG-04 Enriquecedor | apollo.io -> plan gratuito limitado, de pago para volumen |
 | `META_ACCESS_TOKEN` + `META_AD_ACCOUNT_ID` | AG-11 Meta (publicacion real) | business.facebook.com + developers.facebook.com -> Marketing API |
@@ -95,11 +97,41 @@ El **orquestador** (`/api/orchestrator/run`) es el que en produccion ata todo: s
 | `CALCOM_API_KEY` | AG-10 Agenda | cal.com -> Settings -> Developer -> API Keys |
 | `GOOGLE_ADS_DEVELOPER_TOKEN` + `GOOGLE_ADS_CUSTOMER_ID` | AG-22 SEM (publicacion real) | ads.google.com/aw/apicenter + Google Ads API Center |
 
+## Cobro con Stripe: pasos que tienes que hacer tú
+
+El código ya está listo (checkout + webhook + IVA automático), pero hay 3 cosas
+que solo se pueden hacer desde el dashboard de Stripe, con tu cuenta:
+
+### 1. Crear el webhook
+1. Stripe Dashboard -> **Developers -> Webhooks -> Add endpoint**.
+2. URL: `https://colmenalife.com/api/billing/webhook` (o tu dominio de Vercel si `colmenalife.com` aún no apunta ahí).
+3. Evento a escuchar: **`checkout.session.completed`**.
+4. Copia el **"Signing secret"** (empieza por `whsec_...`) y guárdalo como `STRIPE_WEBHOOK_SECRET` en Vercel (Settings -> Environment Variables).
+
+### 2. Activar Stripe Tax (IVA automático)
+El checkout ya pide `automatic_tax: { enabled: true }` y `tax_id_collection: { enabled: true }`
+(recoge el NIF/VAT del comprador). **Si no activas Stripe Tax, el checkout dará error.**
+1. Stripe Dashboard -> **Settings -> Tax** (o busca "Stripe Tax").
+2. Activa el registro fiscal para tu país (H&M Atlas LLC, EE.UU.) y añade los países/regiones donde tengas obligación de cobrar impuesto.
+3. En **Settings -> Business settings -> Public business information**, confirma que el nombre legal que aparecerá en las facturas es **H&M Atlas LLC**.
+
+### 3. Confirmar facturación automática
+1. Stripe Dashboard -> **Settings -> Invoicing** -> activa el envío automático de factura tras cada pago.
+2. Con "Stripe Tax" activo, la factura ya incluye el desglose de impuesto correctamente.
+
+Una vez hecho esto, prueba el flujo completo en modo test con la tarjeta `4242 4242 4242 4242`
+(cualquier fecha futura y CVC) desde la landing -> "Contratar". El webhook debe marcar
+al `Client` correspondiente (buscado por email) con `licenseActive: true`,
+`licensePlan` y `licenseExpiresAt` (+1 año o +6 meses según el plan).
+
 ## Proximos pasos tecnicos
 
 1. Cron real: Vercel Cron o Inngest llamando a `/api/orchestrator/run` cada 15 min.
 2. Autenticacion del dashboard (hoy es publico si se despliega tal cual).
 3. Conectar las integraciones reales (Apollo, Resend, Meta/LinkedIn/Google Ads, Cal.com, CRM) a medida que consigas cada API key.
+4. Página /onboarding: hoy el checkout activa la licencia por email, pero vincular
+   esa licencia con el `domain` del cliente (vía `/api/analyze-website`) es un paso
+   manual/futuro — todavía no hay una pantalla que una ambas cosas automáticamente.
 
 ## Legal, no lo olvides
 

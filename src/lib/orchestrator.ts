@@ -103,7 +103,8 @@ export async function executeDecision(
   switch (decision.action) {
     case "compliance-check": {
       const email = await generateEmail({
-        senderCompany: lead.campaign.client.companyName ?? lead.campaign.client.domain,
+        senderCompany:
+          lead.campaign.client.companyName ?? lead.campaign.client.domain ?? "tu empresa",
         senderDescription: lead.campaign.client.description ?? "",
         lead: {
           fullName: lead.fullName,

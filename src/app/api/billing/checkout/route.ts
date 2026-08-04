@@ -45,6 +45,14 @@ export async function POST(req: NextRequest) {
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${process.env.APP_URL}/bienvenido?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.APP_URL}/precios`,
+    // plan va en metadata para que /api/billing/webhook sepa qué licencia activar
+    // cuando llegue el evento checkout.session.completed.
+    metadata: { plan },
+    // Factura automática con IVA/impuesto correspondiente al país del comprador.
+    // Requiere activar "Stripe Tax" en el dashboard de Stripe (ver README) o esta
+    // llamada fallará.
+    automatic_tax: { enabled: true },
+    tax_id_collection: { enabled: true },
   });
 
   return NextResponse.json({ checkoutUrl: session.url });

@@ -13,13 +13,25 @@ datasource db {
 }
 
 model Client {
-  id           String    @id @default(cuid())
-  domain       String    @unique
-  companyName  String?
-  description  String?
-  icpProfile   Json?     // perfil ICP generado por IA: {segments: [...], reasoning: "..."}
-  createdAt    DateTime  @default(now())
-  campaigns    Campaign[]
+  id     String  @id @default(cuid())
+  // domain es opcional: en el checkout de Stripe solo tenemos el email; el
+  // dominio se rellena después en /onboarding (AG-01/AG-02 vía analyze-website).
+  domain String? @unique
+
+  companyName String?
+  description String?
+  icpProfile  Json? // perfil ICP generado por IA: {segments: [...], reasoning: "..."}
+
+  // Licencia (rellenado por /api/billing/webhook al confirmar el pago en Stripe)
+  email            String?   @unique
+  licenseActive    Boolean   @default(false)
+  licensePlan      String? // "annual" | "semiannual"
+  licenseExpiresAt DateTime?
+  stripeCustomerId String?
+  stripeSessionId  String?
+
+  createdAt DateTime   @default(now())
+  campaigns Campaign[]
 }
 
 model Campaign {
