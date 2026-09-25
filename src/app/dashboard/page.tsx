@@ -1,54 +1,83 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
+import { getIntegrations } from "@/lib/integrations";
+import NewClientForm from "@/components/dashboard/NewClientForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
   const clients = await db.client.findMany({
-    include: { campaigns: { include: { leads: true } } },
+    include: { campaigns: { include: { _count: { select: { leads: true } } } } },
     orderBy: { createdAt: "desc" },
   });
+  const integrations = getIntegrations();
+  const pending = integrations.filter((i) => !i.configured);
 
   return (
-    <div className="wrap" style={{ paddingTop: 60, paddingBottom: 80 }}>
-      <h1 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 32 }}>Panel de control</h1>
-      <p style={{ color: "var(--text-dim)", marginTop: 8 }}>
-        Datos reales de <code>Client → Campaign → Lead</code>. Vacío hasta que llames a{" "}
-        <code>/api/analyze-website</code> por primera vez.
+    <>
+      <h1 style={{ fontSize: 30 }}>Panel de control</h1>
+      <p className="muted" style={{ marginTop: 6 }}>
+        Da de alta un cliente con su web: AG-01 y AG-02 analizan el negocio y crean una campaña por cada segmento de cliente ideal.
       </p>
 
-      {clients.length === 0 && (
-        <p style={{ marginTop: 40, color: "var(--text-dim)" }}>
-          Aún no hay clientes. Prueba: <code>curl -X POST localhost:3000/api/analyze-website -d {"'"}{"{"}"domain":"tuweb.com"{"}"}{"'"}</code>
+      <div className="card">
+        <h2>Nuevo cliente</h2>
+        <NewClientForm />
+      </div>
+
+      <div className="card">
+        <h2>Clientes</h2>
+        {clients.length === 0 ? (
+          <p className="muted" style={{ marginTop: 10 }}>Aún no hay clientes.</p>
+        ) : (
+          <div className="scroll-x">
+            <table className="table">
+              <thead>
+                <tr><th>Empresa</th><th>Dominio</th><th>Campañas</th><th>Leads</th><th>Licencia</th></tr>
+              </thead>
+              <tbody>
+                {clients.map((c) => (
+                  <tr key={c.id}>
+                    <td><Link href={`/dashboard/clients/${c.id}`} style={{ color: "var(--accent)", fontWeight: 600 }}>{c.companyName ?? c.email ?? c.id}</Link></td>
+                    <td className="muted">{c.domain ?? "—"}</td>
+                    <td>{c.campaigns.length}</td>
+                    <td>{c.campaigns.reduce((n, camp) => n + camp._count.leads, 0)}</td>
+                    <td>{c.licenseActive ? <span className="pill ok">activa</span> : <span className="pill">—</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="card">
+        <h2>Integraciones</h2>
+        <p className="muted" style={{ marginTop: 6 }}>
+          {pending.length === 0
+            ? "Todo configurado: los agentes actúan de verdad."
+            : `${pending.length} pendientes. Mientras falten, esos agentes funcionan en modo simulado. Guía paso a paso en docs/CLAVES.md.`}
         </p>
-      )}
-
-      {clients.map((c) => (
-        <div key={c.id} style={{ marginTop: 40, borderTop: "1px solid var(--hairline)", paddingTop: 24 }}>
-          <h2 style={{ fontSize: 20 }}>{c.companyName ?? c.domain}</h2>
-          <p style={{ color: "var(--text-dim)", fontSize: 14, marginTop: 4 }}>{c.description}</p>
-
-          <table style={{ width: "100%", marginTop: 20, borderCollapse: "collapse", fontSize: 14 }}>
-            <thead>
-              <tr style={{ textAlign: "left", color: "var(--text-dim)", fontFamily: "'JetBrains Mono',monospace", fontSize: 12 }}>
-                <th style={{ padding: "8px 0" }}>Campaña</th>
-                <th>Estado</th>
-                <th>Fit score</th>
-                <th>Leads</th>
-              </tr>
-            </thead>
+        <div className="scroll-x">
+          <table className="table">
+            <thead><tr><th>Servicio</th><th>Agentes</th><th>Estado</th><th>Para qué sirve</th></tr></thead>
             <tbody>
-              {c.campaigns.map((camp) => (
-                <tr key={camp.id} style={{ borderTop: "1px solid var(--hairline)" }}>
-                  <td style={{ padding: "10px 0" }}>{camp.name}</td>
-                  <td>{camp.status}</td>
-                  <td>{camp.fitScore ? `${camp.fitScore}%` : "—"}</td>
-                  <td>{camp.leads.length}</td>
+              {integrations.map((i) => (
+                <tr key={i.name}>
+                  <td>{i.name}</td>
+                  <td className="muted mono" style={{ fontSize: 12 }}>{i.agents}</td>
+                  <td>
+                    {i.configured
+                      ? <span className="pill ok">conectado</span>
+                      : <span className="pill warn" title={i.missing.join(", ")}>falta {i.missing.join(", ")}</span>}
+                  </td>
+                  <td className="muted">{i.whatItUnlocks}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      ))}
-    </div>
+      </div>
+    </>
   );
 }

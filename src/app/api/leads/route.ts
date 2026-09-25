@@ -28,6 +28,6 @@ const createSchema = z.object({
 export async function POST(req: NextRequest) {
   const parsed = createSchema.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "datos inválidos" }, { status: 400 });
-  const lead = await db.lead.create({ data: parsed.data });
+  const lead = await db.lead.create({ data: { ...parsed.data, email: parsed.data.email.toLowerCase() } });
   return NextResponse.json(lead, { status: 201 });
 }

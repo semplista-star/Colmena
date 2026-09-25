@@ -1,0 +1,3 @@
+{
+  "crons": [{ "path": "/api/orchestrator/run", "schedule": "0 9 * * 1-5" }]
+}

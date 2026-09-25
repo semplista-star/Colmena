@@ -55,7 +55,9 @@ model Lead {
   companyName  String?
   email        String
   fitScore     Float?
-  status       String   @default("new") // new | emailed | replied | booked | rejected
+  status       String   @default("new") // new | emailed | replied | meeting_sent | booked | rejected
+  // Última vez que AG-09 clasificó sus respuestas: las entrantes posteriores están pendientes
+  lastClassifiedAt DateTime?
   emailLogs    EmailLog[]
   createdAt    DateTime @default(now())
 }
@@ -67,5 +69,8 @@ model EmailLog {
   direction  String   // outbound | inbound
   subject    String?
   body       String
+  // id del proveedor (Resend) si el email salió de verdad; null si fue simulado o es entrante
+  messageId  String?
+  simulated  Boolean  @default(false)
   sentAt     DateTime @default(now())
 }
