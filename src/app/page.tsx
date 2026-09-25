@@ -54,7 +54,7 @@ export default function Home() {
               <div className="hive-grid">
                 {AGENTS.filter((a) => a.dept === dept).map((agent) => (
                   <div className="cell" key={agent.id}>
-                    <span className="status" style={{ background: agent.status === "implemented" ? "var(--cyan)" : agent.status === "stub" ? "var(--amber)" : "#5A6270" }} />
+                    <span className="status" style={{ background: agent.status === "implemented" ? "var(--accent-2)" : agent.status === "stub" ? "var(--accent)" : "#9AA6B4" }} />
                     <div className="id">{agent.id}</div>
                     <div className="name">{agent.name}</div>
                     <div className="role">{agent.summary}</div>
@@ -68,7 +68,7 @@ export default function Home() {
 
       <section className="flow" id="como-funciona">
         <div className="wrap">
-          <div className="k mono" style={{ color: "var(--amber)", fontSize: 12, letterSpacing: "0.08em" }}>// Puesta en marcha</div>
+          <div className="k mono" style={{ color: "var(--accent)", fontSize: 12, letterSpacing: "0.08em" }}>// Puesta en marcha</div>
           <h2 style={{ fontSize: "clamp(26px,3.4vw,38px)", marginTop: 10, letterSpacing: "-0.02em" }}>De tu dominio a la primera reunión agendada</h2>
           <div className="flow-grid">
             <div className="flow-step"><div className="num">01</div><h3>Nos das tu web</h3><p>La colmena la analiza junto a tus competidores y define tu cliente ideal.</p></div>
@@ -81,7 +81,7 @@ export default function Home() {
 
       <section className="channels" id="canales">
         <div className="wrap">
-          <div className="k mono" style={{ color: "var(--amber)", fontSize: 12, letterSpacing: "0.08em" }}>// Multicanal</div>
+          <div className="k mono" style={{ color: "var(--accent)", fontSize: 12, letterSpacing: "0.08em" }}>// Multicanal</div>
           <h2 style={{ fontSize: "clamp(26px,3.4vw,38px)", marginTop: 10, letterSpacing: "-0.02em" }}>El agente elige el canal según tu tipo de cliente</h2>
           <div className="ch-grid">
             <div className="ch-card"><h3>Email en frío</h3><p>Prospección directa a decisores, con dominios propios calentados y seguimiento automático.</p><span className="tag">AG-06 · AG-07 · AG-08</span></div>
@@ -93,7 +93,7 @@ export default function Home() {
 
       <section className="pricing" id="precios">
         <div className="wrap">
-          <div className="k mono" style={{ color: "var(--amber)", fontSize: 12, letterSpacing: "0.08em" }}>// Licencia</div>
+          <div className="k mono" style={{ color: "var(--accent)", fontSize: 12, letterSpacing: "0.08em" }}>// Licencia</div>
           <h2 style={{ fontSize: "clamp(26px,3.4vw,38px)", marginTop: 10, letterSpacing: "-0.02em" }}>Un precio, la colmena entera</h2>
           <div className="price-grid">
             <div className="price-card">

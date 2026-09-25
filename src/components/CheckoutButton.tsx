@@ -56,7 +56,7 @@ export default function CheckoutButton({ plan, label, variant }: CheckoutButtonP
           {label}
         </button>
         {stage === "error" && error && (
-          <p style={{ color: "var(--amber)", fontSize: 12.5, marginTop: 8, maxWidth: 220 }}>{error}</p>
+          <p style={{ color: "var(--accent)", fontSize: 12.5, marginTop: 8, maxWidth: 220 }}>{error}</p>
         )}
       </div>
     );
