@@ -238,7 +238,10 @@ export async function executeDecision(
     }
 
     case "book-meeting": {
-      const result = await bookMeeting({ leadFirstName: lead.fullName.split(" ")[0] });
+      const result = await bookMeeting({
+        leadFirstName: lead.fullName.split(" ")[0],
+        bookingUrl: lead.campaign.client.bookingUrl,
+      });
       const sent = await sendAndLog(lead, result.subject, result.body);
       // Pasa a "booked" cuando el lead reserve de verdad (webhook de Cal.com)
       await db.lead.update({ where: { id: lead.id }, data: { status: "meeting_sent" } });
@@ -247,7 +250,7 @@ export async function executeDecision(
         executed: true,
         summary: result.bookingUrl
           ? `Enlace de reserva de Cal.com: ${sentLabel(sent.simulated)}. Pasará a "reunión" cuando reserve.`
-          : `Propuesta de reunión por email (sin CALCOM_BOOKING_URL): ${sentLabel(sent.simulated)}.`,
+          : `Propuesta de reunión por email (el cliente no tiene enlace de Cal.com): ${sentLabel(sent.simulated)}.`,
         details: result,
       };
     }

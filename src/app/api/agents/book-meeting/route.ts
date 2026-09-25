@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const bodySchema = z.object({
   leadFirstName: z.string(),
+  bookingUrl: z.string().url().optional(),
 });
 
 // POST /api/agents/book-meeting  (AG-10 Agenda)

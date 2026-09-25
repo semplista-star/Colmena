@@ -6,6 +6,7 @@ import AddLeads from "@/components/dashboard/AddLeads";
 import LeadRow from "@/components/dashboard/LeadRow";
 import OrchestratorPanel from "@/components/dashboard/OrchestratorPanel";
 import DbError from "@/components/dashboard/DbError";
+import BookingSettings from "@/components/dashboard/BookingSettings";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,13 @@ export default async function ClientPage({ params }: { params: { id: string } })
       </div>
 
       <OrchestratorPanel clientId={client.id} />
+
+      <BookingSettings
+        clientId={client.id}
+        bookingUrl={client.bookingUrl}
+        webhookUrl={`${process.env.APP_URL?.startsWith("https://") ? process.env.APP_URL : "https://www.colmenalife.com"}/api/webhooks/calcom`}
+        webhookSecret={process.env.CALCOM_WEBHOOK_SECRET ?? null}
+      />
 
       {client.campaigns.map((camp) => (
         <div className="card" key={camp.id}>
