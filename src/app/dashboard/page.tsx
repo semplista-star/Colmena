@@ -2,14 +2,20 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getIntegrations } from "@/lib/integrations";
 import NewClientForm from "@/components/dashboard/NewClientForm";
+import DbError from "@/components/dashboard/DbError";
 
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const clients = await db.client.findMany({
-    include: { campaigns: { include: { _count: { select: { leads: true } } } } },
-    orderBy: { createdAt: "desc" },
-  });
+  let clients;
+  try {
+    clients = await db.client.findMany({
+      include: { campaigns: { include: { _count: { select: { leads: true } } } } },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    return <><h1 style={{ fontSize: 30 }}>Panel de control</h1><DbError error={error} /></>;
+  }
   const integrations = getIntegrations();
   const pending = integrations.filter((i) => !i.configured);
 
