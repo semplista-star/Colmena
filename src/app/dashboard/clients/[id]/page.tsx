@@ -5,11 +5,14 @@ import CampaignStatus from "@/components/dashboard/CampaignStatus";
 import AddLeads from "@/components/dashboard/AddLeads";
 import LeadRow from "@/components/dashboard/LeadRow";
 import OrchestratorPanel from "@/components/dashboard/OrchestratorPanel";
+import DbError from "@/components/dashboard/DbError";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientPage({ params }: { params: { id: string } }) {
-  const client = await db.client.findUnique({
+  let client;
+  try {
+    client = await db.client.findUnique({
     where: { id: params.id },
     include: {
       campaigns: {
@@ -19,7 +22,10 @@ export default async function ClientPage({ params }: { params: { id: string } })
         },
       },
     },
-  });
+    });
+  } catch (error) {
+    return <><Link href="/dashboard" className="muted">← Clientes</Link><DbError error={error} /></>;
+  }
   if (!client) notFound();
 
   const allLeads = client.campaigns.flatMap((c) => c.leads);
