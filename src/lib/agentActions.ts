@@ -5,6 +5,7 @@
 // completa en un solo POST /api/orchestrator/run.
 
 import { anthropic, MODEL } from "@/lib/anthropic";
+import { pick, seededRandom, slugifyEmailPart } from "@/lib/simulate";
 
 function extractJson(raw: string): unknown {
   return JSON.parse(raw.replace(/```json|```/g, "").trim());
@@ -141,30 +142,106 @@ Devuelve SOLO JSON: {"subject": string, "body": string}`,
   return { ...email, body: withUnsubscribeFooter(email.body) };
 }
 
-// --- AG-10 Agenda (simulado hasta tener CALCOM_API_KEY) --------------------
+// --- AG-10 Agenda -----------------------------------------------------------
+// Con CALCOM_BOOKING_URL (tu enlace público de Cal.com, ej. https://cal.com/tu-usuario/30min)
+// el agente envía al lead un email real con el enlace para que elija hueco. Cuando
+// el lead reserva, Cal.com avisa a /api/webhooks/calcom y el lead pasa a "booked".
+// No hace falta API key de Cal.com para esto: solo el enlace y el webhook.
 
 export interface BookMeetingInput {
   leadFirstName: string;
 }
 export interface BookMeetingResult {
-  booked: boolean;
   simulated: boolean;
-  slot: string; // ISO datetime
-  note: string;
+  bookingUrl: string | null;
+  subject: string;
+  body: string;
 }
 
 export async function bookMeeting(input: BookMeetingInput): Promise<BookMeetingResult> {
-  // TODO cuando exista CALCOM_API_KEY: sustituir por una llamada real a
-  // POST https://api.cal.com/v2/bookings con los huecos disponibles reales.
-  const slot = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // "dentro de 3 días", determinista para pruebas
-  slot.setHours(10, 0, 0, 0);
+  const bookingUrl = process.env.CALCOM_BOOKING_URL || null;
+  const body = bookingUrl
+    ? `¡Genial, ${input.leadFirstName}! Para no marear con idas y venidas, aquí puedes elegir el hueco que mejor te venga (30 min):\n\n${bookingUrl}\n\nSi ninguno te encaja, dime un par de opciones y me adapto.`
+    : `¡Genial, ${input.leadFirstName}! ¿Qué día y hora te vendrían bien esta semana o la próxima para una llamada de 30 minutos?`;
 
   return {
-    booked: true,
-    simulated: !process.env.CALCOM_API_KEY,
-    slot: slot.toISOString(),
-    note: process.env.CALCOM_API_KEY
-      ? "CALCOM_API_KEY detectada, pero la integración real aún no está implementada en el código."
-      : `Reunión simulada para ${input.leadFirstName}. Falta CALCOM_API_KEY para agendar de verdad en Cal.com.`,
+    simulated: !bookingUrl,
+    bookingUrl,
+    subject: "Buscamos hueco para hablar",
+    body,
+  };
+}
+
+// --- AG-04 Enriquecedor --------------------------------------------------------
+// Real con APOLLO_API_KEY (People Match de Apollo: busca a la persona y devuelve
+// email verificado, cargo y tamaño de empresa). Sin clave, estimación determinista.
+
+export interface EnrichLeadInput {
+  fullName: string;
+  companyName?: string;
+  companyDomain?: string;
+}
+export interface EnrichLeadResult {
+  simulated: boolean;
+  note: string;
+  email: string | null;
+  role: string | null;
+  companySize: string | null;
+  linkedinUrl?: string | null;
+}
+
+const ROLES = ["CEO", "Director/a de Marketing", "Head of Sales", "Responsable de Operaciones", "Founder"];
+const SIZES = ["1-10", "11-50", "51-200", "201-500"];
+
+export async function enrichLead(input: EnrichLeadInput): Promise<EnrichLeadResult> {
+  const { fullName, companyName, companyDomain } = input;
+  const [first, ...rest] = fullName.trim().split(/\s+/);
+  const last = rest.join(" ") || first;
+
+  if (process.env.APOLLO_API_KEY) {
+    const res = await fetch("https://api.apollo.io/api/v1/people/match", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        "X-Api-Key": process.env.APOLLO_API_KEY,
+      },
+      body: JSON.stringify({
+        first_name: first,
+        last_name: last,
+        organization_name: companyName,
+        domain: companyDomain,
+      }),
+    });
+    if (!res.ok) throw new Error(`Apollo ${res.status}: ${await res.text()}`);
+    const data = (await res.json()) as {
+      person?: {
+        email?: string | null;
+        title?: string | null;
+        linkedin_url?: string | null;
+        organization?: { estimated_num_employees?: number | null } | null;
+      } | null;
+    };
+    const person = data.person;
+    const employees = person?.organization?.estimated_num_employees;
+    return {
+      simulated: false,
+      note: person ? "Datos de Apollo." : "Apollo no encontró a esta persona.",
+      email: person?.email ?? null,
+      role: person?.title ?? null,
+      companySize: employees ? String(employees) : null,
+      linkedinUrl: person?.linkedin_url ?? null,
+    };
+  }
+
+  const rand = seededRandom(fullName + (companyDomain ?? companyName ?? ""));
+  return {
+    simulated: true,
+    note: "Falta APOLLO_API_KEY: email y datos de empresa son una estimación, no verificados.",
+    email: companyDomain
+      ? `${slugifyEmailPart(first)}.${slugifyEmailPart(last)}@${companyDomain}`
+      : null,
+    role: pick(rand, ROLES),
+    companySize: pick(rand, SIZES),
   };
 }

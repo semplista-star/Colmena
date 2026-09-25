@@ -64,11 +64,23 @@ prisma/schema.prisma -> Client -> Campaign -> Lead -> EmailLog (Supabase: DATABA
 
 ## Estado real de cada agente (no todo es humo)
 
-- **Implementados de verdad** (IA real + persistencia en BD): AG-01, AG-02, AG-06, AG-25 (Landing Builder, no depende de ninguna API externa)
+- **Implementados de verdad** (IA real + persistencia en BD + acción real cuando está la clave): AG-01, AG-02, AG-04 (Apollo), AG-06, AG-07, AG-09, AG-10 (Cal.com), AG-19, AG-25
 - **Contenido/plan real vía IA — la ACCIÓN externa (publicar/enviar) pendiente de tu API key**: AG-11 Meta, AG-12 LinkedIn, AG-13 Creativo, AG-21 SEO, AG-22 SEM, AG-23 Newsletter, AG-24 Redes sociales
-- **Lógica determinista real, solo falta automatizar el dato de entrada**: AG-08 Buzón (SPF/DMARC ya reales por DNS), AG-14 Puja, AG-16 Contable, AG-17 Semáforo, AG-19 Cumplimiento
-- **Simulados/mock para poder probar el flujo end-to-end sin la API todavía**: AG-03 Radar, AG-04 Enriquecedor, AG-05 Vigía, AG-10 Agenda, AG-18 CRM
-- **Orquestados automáticamente vía IA, sin acción externa que dependa de terceros**: AG-07 Rotafolios, AG-09 Conserje, AG-20 Informe
+- **Lógica determinista real, solo falta automatizar el dato de entrada**: AG-08 Buzón (SPF/DMARC ya reales por DNS), AG-14 Puja, AG-16 Contable, AG-17 Semáforo
+- **Simulados/mock para poder probar el flujo end-to-end sin la API todavía**: AG-03 Radar, AG-05 Vigía, AG-18 CRM
+- **Orquestados automáticamente vía IA**: AG-20 Informe
+
+Cómo conseguir cada clave, paso a paso: **[docs/CLAVES.md](docs/CLAVES.md)**.
+
+### El panel (`/dashboard`, protegido con `ADMIN_PASSWORD`)
+
+1. **Nuevo cliente**: pones su web → AG-01/AG-02 crean una campaña por segmento (en borrador).
+2. En cada campaña: **añadir leads** (uno a uno, con "Buscar email" de AG-04, o pegando una lista) y cambiar el estado a **Activa**.
+3. **Orquestador**: "Ver qué haría" (sin enviar) o "Ejecutar ahora". Además corre solo cada mañana laborable (Vercel Cron, `vercel.json`).
+4. En cada lead ves el hilo completo (enviados, respuestas, reserva) y puedes registrar a mano una respuesta.
+5. **Agentes**: consola para lanzar cualquiera de los 25 agentes con tus datos (AG-25 muestra la landing generada).
+
+Flujo del email en frío: `nuevo` → AG-19 aprueba y AG-06 envía (Resend) → sin respuesta en 3 días, AG-07 hace hasta 3 seguimientos → la respuesta entra por `/api/webhooks/inbound` → AG-09 la clasifica (baja/no interesado = descartado; pregunta = contesta; interesado = AG-10 le manda tu enlace de Cal.com) → al reservar, `/api/webhooks/calcom` lo marca como `reunión`. Solo se tocan las campañas en estado **Activa** o **Escalando**; sin claves, todo funciona igual pero los envíos quedan marcados como simulados.
 
 El **orquestador** (`/api/orchestrator/run`) es el que en produccion ata todo: se ejecuta con un cron cada 15 min, decide lead a lead a que agente llamar, y **ejecuta esa acción de verdad** (genera y envía el email, comprueba cumplimiento, clasifica respuestas, agenda la reunión), dejando rastro en `EmailLog` y actualizando el `status` del lead. Usa `?dryRun=1` para solo ver las decisiones sin ejecutarlas.
 

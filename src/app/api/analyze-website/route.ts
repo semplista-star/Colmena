@@ -78,14 +78,18 @@ Sé conciso incluso si la empresa tiene mucha información disponible: prioriza 
   });
 
   // AG-02 crea automáticamente una campaña en borrador por cada segmento detectado
+  // (sin duplicar las que ya existían si se vuelve a analizar el mismo dominio)
+  const existing = await db.campaign.findMany({ where: { clientId: client.id }, select: { name: true } });
+  const existingNames = new Set(existing.map((c) => c.name));
   await db.campaign.createMany({
-    data: parsedJson.segments.map((s: { name: string; fitScore: number }) => ({
-      clientId: client.id,
-      name: s.name,
-      fitScore: s.fitScore,
-      status: "draft",
-    })),
-    skipDuplicates: true,
+    data: parsedJson.segments
+      .filter((s: { name: string }) => !existingNames.has(s.name))
+      .map((s: { name: string; fitScore: number }) => ({
+        clientId: client.id,
+        name: s.name,
+        fitScore: s.fitScore,
+        status: "draft",
+      })),
   });
 
   return NextResponse.json({ clientId: client.id, ...parsedJson });

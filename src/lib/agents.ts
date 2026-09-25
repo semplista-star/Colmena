@@ -36,7 +36,7 @@ export const AGENTS: AgentDef[] = [
     id: "AG-04", name: "Enriquecedor", dept: "inteligencia",
     summary: "Completa datos de contacto y empresa.",
     systemPrompt: "Dado un nombre de empresa o persona, resuelve email profesional, cargo y tamaño de empresa contra fuentes de datos B2B.",
-    status: "stub", // => /api/agents/enrich-lead (simulado; falta APOLLO_API_KEY)
+    status: "implemented", // => /api/agents/enrich-lead (real con APOLLO_API_KEY; sin ella, estimación)
   },
   {
     id: "AG-05", name: "Vigía", dept: "inteligencia",
@@ -54,7 +54,7 @@ export const AGENTS: AgentDef[] = [
     id: "AG-07", name: "Rotafolios", dept: "prospeccion",
     summary: "Gestiona secuencias de seguimiento.",
     systemPrompt: "Decides cuándo y qué enviar como seguimiento (2º y 3º email) según si el lead abrió, ignoró o mostró interés parcial.",
-    status: "stub",
+    status: "implemented", // => orquestador: seguimientos 1-3 a los 3 días, envío real con Resend
   },
   {
     id: "AG-08", name: "Buzón", dept: "prospeccion",
@@ -66,13 +66,13 @@ export const AGENTS: AgentDef[] = [
     id: "AG-09", name: "Conserje", dept: "prospeccion",
     summary: "Lee y clasifica cada respuesta entrante.",
     systemPrompt: "Clasificas la respuesta de un lead en: interesado / no interesado / pregunta / fuera de oficina / baja. Si está interesado, redactas la siguiente respuesta.",
-    status: "stub",
+    status: "implemented", // => orquestador + /api/webhooks/inbound: clasifica y contesta preguntas
   },
   {
     id: "AG-10", name: "Agenda", dept: "prospeccion",
     summary: "Reserva la reunión en el calendario.",
     systemPrompt: "Cuando un lead confirma interés, ofreces huecos disponibles y confirmas la reunión vía la API de calendario conectada.",
-    status: "stub", // => /api/agents/book-meeting (simulado; falta CALCOM_API_KEY)
+    status: "implemented", // => orquestador: envía tu enlace de Cal.com; /api/webhooks/calcom confirma la reserva
   },
   {
     id: "AG-11", name: "Meta", dept: "ads",
@@ -126,7 +126,7 @@ export const AGENTS: AgentDef[] = [
     id: "AG-19", name: "Cumplimiento", dept: "operaciones",
     summary: "Verifica RGPD/CAN-SPAM antes de cada envío.",
     systemPrompt: "Revisas cada email antes de enviarlo: incluye vía de baja, no usa datos sensibles, respeta límites de frecuencia. Devuelve aprobado/rechazado y por qué.",
-    status: "stub",
+    status: "implemented", // => orquestador: bloquea envíos sin baja, 3+ contactos/30 días o datos sensibles
   },
   {
     id: "AG-20", name: "Informe", dept: "operaciones",
