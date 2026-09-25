@@ -143,13 +143,15 @@ Devuelve SOLO JSON: {"subject": string, "body": string}`,
 }
 
 // --- AG-10 Agenda -----------------------------------------------------------
-// Con CALCOM_BOOKING_URL (tu enlace público de Cal.com, ej. https://cal.com/tu-usuario/30min)
-// el agente envía al lead un email real con el enlace para que elija hueco. Cuando
-// el lead reserva, Cal.com avisa a /api/webhooks/calcom y el lead pasa a "booked".
-// No hace falta API key de Cal.com para esto: solo el enlace y el webhook.
+// Cada cliente conecta SU Cal.com: guarda su enlace público en el panel
+// (Client.bookingUrl, ej. https://cal.com/mimper/30min) y el agente se lo envía al
+// lead para que elija hueco. Cuando el lead reserva, Cal.com avisa a
+// /api/webhooks/calcom y el lead pasa a "booked". No hace falta API key de Cal.com.
+// CALCOM_BOOKING_URL queda solo como enlace por defecto si el cliente no tiene uno.
 
 export interface BookMeetingInput {
   leadFirstName: string;
+  bookingUrl?: string | null;
 }
 export interface BookMeetingResult {
   simulated: boolean;
@@ -159,7 +161,7 @@ export interface BookMeetingResult {
 }
 
 export async function bookMeeting(input: BookMeetingInput): Promise<BookMeetingResult> {
-  const bookingUrl = process.env.CALCOM_BOOKING_URL || null;
+  const bookingUrl = input.bookingUrl || process.env.CALCOM_BOOKING_URL || null;
   const body = bookingUrl
     ? `¡Genial, ${input.leadFirstName}! Para no marear con idas y venidas, aquí puedes elegir el hueco que mejor te venga (30 min):\n\n${bookingUrl}\n\nSi ninguno te encaja, dime un par de opciones y me adapto.`
     : `¡Genial, ${input.leadFirstName}! ¿Qué día y hora te vendrían bien esta semana o la próxima para una llamada de 30 minutos?`;

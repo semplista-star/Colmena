@@ -3,7 +3,7 @@
 Cada clave se pone en **Vercel → tu proyecto → Settings → Environment Variables**. Después hay que hacer **Redeploy** para que la web la lea.
 El panel (`/dashboard`) tiene una tabla "Integraciones" que te dice cuáles faltan.
 
-Orden recomendado: 1 → 2 → 3 → 4. Con esos cuatro pasos el email en frío ya funciona de principio a fin. Meta, LinkedIn y Google Ads van al final porque tardan días en aprobarse.
+Orden recomendado: 1 → 2 → 3 → 4 (el 4 lo hace cada cliente). Con esos cuatro pasos el email en frío ya funciona de principio a fin. Meta, LinkedIn y Google Ads van al final porque tardan días en aprobarse.
 
 ---
 
@@ -46,21 +46,20 @@ Para que AG-09 clasifique las respuestas, tienen que llegar a Colmena. Hay dos o
 |---|---|
 | `INBOUND_SECRET` | Una cadena aleatoria, la misma que pones en la URL del webhook. |
 
-## 4. Agenda — Cal.com (10 min, gratis)
+## 4. Agenda — Cal.com (lo conecta cada cliente)
 
-1. Crea una cuenta en https://cal.com y un tipo de evento de 30 min. Conéctalo a tu Google Calendar u Outlook.
-2. Copia tu enlace público, por ejemplo `https://cal.com/tu-usuario/30min`.
-3. **Settings → Developer → Webhooks → New**:
-   - URL: `https://www.colmenalife.com/api/webhooks/calcom`
-   - Evento: **Booking Created**
-   - Secret: inventa una cadena aleatoria y ponla también en Vercel.
+Cada cliente usa **su propia** agenda. No hace falta ninguna clave de Cal.com.
 
-| Variable | Valor |
+1. El cliente crea una cuenta gratis en https://cal.com y conecta su Google Calendar u Outlook.
+2. Crea un evento de 30 min y te pasa su enlace público, por ejemplo `https://cal.com/mimper/30min`.
+3. En el panel, en la ficha del cliente, pegas ese enlace en **"Agenda del cliente (Cal.com)"**.
+4. El cliente crea en Cal.com un webhook (**Settings → Developer → Webhooks → New**) con el evento **Booking Created**. La URL y el secret que tiene que poner aparecen en esa misma tarjeta del panel, en "Ver instrucciones para el cliente".
+
+| Variable (ya configurada en Vercel) | Valor |
 |---|---|
-| `CALCOM_BOOKING_URL` | Tu enlace público. |
-| `CALCOM_WEBHOOK_SECRET` | El secret del webhook. |
+| `CALCOM_WEBHOOK_SECRET` | El secret común que cada cliente pone en su webhook. |
 
-Cuando un lead reserva, pasa solo a "reunión" en el panel.
+Cuando un lead reserva, pasa solo a "reunión" en el panel. Si un cliente no tiene enlace, AG-10 pregunta al lead por email qué día le va bien.
 
 ## 5. Datos de contacto — Apollo (10 min, hay plan gratuito)
 

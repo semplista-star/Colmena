@@ -22,6 +22,10 @@ model Client {
   description String?
   icpProfile  Json? // perfil ICP generado por IA: {segments: [...], reasoning: "..."}
 
+  // Enlace público de Cal.com DEL CLIENTE (ej. https://cal.com/mimper/30min):
+  // AG-10 se lo manda a sus leads interesados para que reserven en SU agenda.
+  bookingUrl  String?
+
   // Licencia (rellenado por /api/billing/webhook al confirmar el pago en Stripe)
   email            String?   @unique
   licenseActive    Boolean   @default(false)
