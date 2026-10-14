@@ -49,7 +49,7 @@ src/
       ads/
         meta/                     -> AG-11: plan de campana Meta Ads (IA) + publicacion real (pendiente de token)
         linkedin/                 -> AG-12: plan de campana LinkedIn Ads (IA) + publicacion real (pendiente de token)
-      billing/checkout/          -> cobro de la licencia (Stripe: 3000E/ano o 1500E/6 meses)
+      billing/checkout/          -> cobro de la licencia (Stripe: 2.900 €/año o 1.500 €/6 meses)
       billing/webhook/           -> checkout.session.completed -> activa la licencia del Client
       clients/, campaigns/, leads/  -> CRUD sobre la base de datos
       orchestrator/run/           -> recorre los leads activos, decide que agente debe actuar y LO EJECUTA

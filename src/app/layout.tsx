@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Colmena — 25 agentes de IA para conseguirte clientes",
+  title: "Colmena Life — Agentes de IA para tu negocio",
   description:
-    "Colmena analiza tu negocio, encuentra a las personas que sí te van a comprar, les escribe, lanza anuncios en Meta y LinkedIn, y te trae la reunión agendada.",
+    "25 agentes de IA que analizan tu empresa, identifican prospectos y gestionan emails y campañas en Meta y LinkedIn para agendar reuniones en tu calendario.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

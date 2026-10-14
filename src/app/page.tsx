@@ -1,135 +1,231 @@
+import Link from "next/link";
 import { AGENTS, AgentDept } from "@/lib/agents";
 import CheckoutButton from "@/components/CheckoutButton";
+import "./landing.css";
 
-const DEPT_LABELS: Record<AgentDept, { range: string; title: string }> = {
-  inteligencia: { range: "01—05", title: "Inteligencia de mercado" },
-  prospeccion: { range: "06—10", title: "Prospección directa" },
-  ads: { range: "11—15", title: "Publicidad de pago" },
-  operaciones: { range: "16—20", title: "Operaciones y reporting" },
-  marketing: { range: "21—25", title: "Marketing de contenido" },
-};
+// Web pública de Colmena Life. Diseño y textos entregados por el cliente
+// (14-oct-2026); los 25 agentes se pintan desde src/lib/agents.ts para que
+// la web y el panel nunca se desincronicen.
 
-export default function Home() {
-  const depts = Object.keys(DEPT_LABELS) as AgentDept[];
+const DEPTS: { id: AgentDept; range: string; title: string }[] = [
+  { id: "inteligencia", range: "01—05", title: "Inteligencia de mercado" },
+  { id: "prospeccion", range: "06—10", title: "Prospección directa" },
+  { id: "ads", range: "11—15", title: "Publicidad de pago" },
+  { id: "operaciones", range: "16—20", title: "Operaciones y reporting" },
+  { id: "marketing", range: "21—25", title: "Marketing de contenido" },
+];
 
+const TEAMS = [
+  { img: "inteligencia-mercado", title: ["Inteligencia de", "mercado"], text: "Agentes especializados en analizar en profundidad tu negocio, competidores y tendencias globales." },
+  { img: "prospeccion-directa", title: ["Prospección directa"], text: "Identificación y contacto automatizado de clientes potenciales cualificados para tu embudo de ventas." },
+  { img: "publicidad-pago", title: ["Publicidad de pago"], text: "Gestión experta de campañas en Meta y LinkedIn para optimizar el retorno de tu inversión publicitaria." },
+  { img: "operaciones-reporting", title: ["Operaciones y", "reporting"], text: "Agentes técnicos que aseguran que todo funcione correctamente y reportan resultados en tiempo real." },
+  { img: "marketing-contenido", title: ["Marketing de", "contenido"], text: "Generación de narrativas persuasivas para atraer y educar a tu audiencia a través de canales digitales." },
+  { img: "optimizacion-continua", title: ["Optimización", "continua"], text: "Ajuste constante de las estrategias para que los agentes mejoren su rendimiento a partir de los resultados." },
+];
+
+const STEPS = [
+  { title: ["Análisis de", "web"], text: "Analizamos tu sitio web y competidores para extraer tu propuesta de valor y definir una estrategia de captación ganadora." },
+  { title: ["Activación de", "agentes"], text: "Nuestra colmena de 25 agentes de IA se pone en marcha, organizándose en equipos de prospección y marketing para tu negocio." },
+  { title: ["Campañas", "multicanal"], text: "Lanzamos prospección directa vía email y campañas optimizadas en Meta y LinkedIn Ads para alcanzar a tus clientes ideales." },
+  { title: ["Reuniones en", "agenda"], text: "Los agentes gestionan toda la comunicación inicial y agendan las reuniones de venta directamente en tu calendario comercial." },
+];
+
+const CHANNELS = [
+  { img: "email-frio", title: ["Email en frío"], text: "Ideal para prospección directa. Nuestros agentes analizan y contactan clientes potenciales de forma autónoma." },
+  { img: "meta-ads", title: ["Meta Ads (B2C)"], text: "Estrategia perfecta para negocios B2C o ciclos de venta cortos, maximizando el alcance y la conversión rápida." },
+  { img: "linkedin-ads", title: ["LinkedIn Ads", "(B2B)"], text: "Diseñado para ventas B2B y procesos complejos. Conectamos tu marca con los tomadores de decisiones clave." },
+];
+
+const FAQ = [
+  { q: "¿Qué es Colmena Life?", a: "Colmena Life reúne 25 agentes de inteligencia artificial, cada uno pensado para ayudarte en un ámbito concreto, dentro de una misma propuesta." },
+  { q: "¿Qué hace cada agente?", a: "Cada agente está especializado en una tarea o área diferente. Puedes consultar la descripción de los 25 agentes en la sección Agentes de esta página." },
+  { q: "¿Cómo empieza a trabajar Colmena con mi negocio?", a: "Nos das tu web y Colmena la analiza junto a tus competidores para definir tu cliente ideal. Después se eligen los canales de captación: email en frío, Meta Ads o LinkedIn Ads." },
+  { q: "¿Tengo que hacer los seguimientos y agendar las reuniones?", a: "Colmena gestiona las secuencias de seguimiento, lee y clasifica las respuestas y reserva las reuniones en tu calendario. Recibes cada cita con el contexto del contacto." },
+];
+
+// Títulos con salto de línea opcional, como en el diseño original
+function Lines({ parts }: { parts: string[] }) {
   return (
     <>
-      <nav>
-        <div className="wrap">
-          <div className="logo"><span className="dot" />COLMENA</div>
-          <div className="navlinks">
-            <a href="#agentes">Agentes</a>
-            <a href="#como-funciona">Cómo funciona</a>
-            <a href="#canales">Canales</a>
-            <a href="#precios">Precios</a>
-          </div>
-          <a href="#precios" className="navcta">Empezar</a>
-        </div>
-      </nav>
+      {parts.map((p, i) => (
+        <span key={i}>
+          {i > 0 && <br />}
+          {p}
+        </span>
+      ))}
+    </>
+  );
+}
 
-      <section className="hero">
-        <div className="wrap">
-          <div className="eyebrow"><span className="pulse" />25 AGENTES · SIEMPRE ACTIVOS</div>
-          <h1>Una colmena de agentes de IA que <em>encuentra</em>, <em>convence</em> y <em>agenda</em> a tus próximos clientes.</h1>
-          <p className="lead">Colmena analiza tu negocio, encuentra a las personas que sí te van a comprar, les escribe, les lanza anuncios en Meta y LinkedIn, y te trae la reunión agendada. Sin equipo de ventas, sin agencia.</p>
-          <div className="ctas">
-            <a href="#precios" className="btn-primary">Activar mi colmena</a>
-            <a href="#agentes" className="btn-ghost">Ver los 25 agentes</a>
+export default function Home() {
+  return (
+    <div className="colmena-landing">
+      <header className="colmena-header">
+        <Link className="ch-logo" href="/" aria-label="Colmena, inicio">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/imagenes/logo-colmena.webp" alt="Colmena" width={300} height={90} decoding="async" />
+        </Link>
+      </header>
+
+      <section className="colmena-premium" aria-label="Colmena">
+        <div className="colmena-panel">
+          <div className="colmena-content">
+            <h1 className="colmena-title">
+              <span>25 agentes inteligentes</span> <span>enfocados en disparar tus</span> <span>ganancias</span>
+            </h1>
+            <p className="colmena-description">
+              Buscar clientes, escribir emails y hacer seguimientos consume el tiempo que necesitas para gestionar tu negocio.
+              Colmena reúne 25 agentes de IA que analizan tu empresa, identifican prospectos y gestionan emails y campañas en
+              Meta y LinkedIn para agendar reuniones en tu calendario, con el contexto de cada contacto.
+            </p>
+            <a className="colmena-button" href="#colmena-destino">EMPEZAR<br />AHORA</a>
           </div>
         </div>
       </section>
 
-      <section className="hive-section" id="agentes">
-        <div className="wrap">
-          <div className="hive-header">
-            <div className="k">// Plantilla completa</div>
-            <h2>25 agentes especializados, organizados en 5 equipos</h2>
+      <section className="colmena-team-grid" aria-label="Equipos y optimización de Colmena">
+        <div className="ctg-wrap">
+          <h2>Nuestros equipos de IA</h2>
+          <div className="ctg-grid">
+            {TEAMS.map((t) => (
+              <article className="ctg-card" key={t.img}>
+                <span className="ctg-icon" aria-hidden="true">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/imagenes/${t.img}.webp`} alt="" width={84} height={84} loading="lazy" decoding="async" />
+                </span>
+                <h3><Lines parts={t.title} /></h3>
+                <p>{t.text}</p>
+              </article>
+            ))}
           </div>
+        </div>
+      </section>
 
-          {depts.map((dept) => (
-            <div className="dept" key={dept}>
-              <div className="dept-title">
-                <span className="n">{DEPT_LABELS[dept].range}</span> {DEPT_LABELS[dept].title}
-              </div>
-              <div className="hive-grid">
-                {AGENTS.filter((a) => a.dept === dept).map((agent) => (
-                  <div className="cell" key={agent.id}>
-                    <span className="status" style={{ background: agent.status === "implemented" ? "var(--accent-2)" : agent.status === "stub" ? "var(--accent)" : "#9AA6B4" }} />
-                    <div className="id">{agent.id}</div>
-                    <div className="name">{agent.name}</div>
-                    <div className="role">{agent.summary}</div>
-                  </div>
+      <div id="colmena-destino" style={{ scrollMarginTop: 100 }} />
+      <section className="colmena-equipos" id="agentes" aria-label="Equipos de agentes de Colmena">
+        <div className="cm-wrap">
+          <p className="cm-label">Inteligencia coordinada</p>
+          <h2>25 agentes especializados,<br />organizados en 5 equipos</h2>
+          {DEPTS.map((d) => (
+            // name agrupa los desplegables: al abrir uno se cierra el anterior
+            <details className="cm-team" key={d.id} {...{ name: "colmena-equipos" }}>
+              <summary>
+                <span className="cm-range">{d.range}</span>
+                <span className="cm-title">{d.title}</span>
+                <span className="cm-toggle" aria-hidden="true" />
+              </summary>
+              <div className="cm-agents">
+                {AGENTS.filter((a) => a.dept === d.id).map((a) => (
+                  <article className="cm-agent" key={a.id}>
+                    <span className="cm-id">{a.id}</span>
+                    <h3>{a.name}</h3>
+                    <p>{a.summary}</p>
+                  </article>
                 ))}
               </div>
-            </div>
+            </details>
           ))}
         </div>
       </section>
 
-      <section className="flow" id="como-funciona">
-        <div className="wrap">
-          <div className="k mono" style={{ color: "var(--accent)", fontSize: 12, letterSpacing: "0.08em" }}>// Puesta en marcha</div>
-          <h2 style={{ fontSize: "clamp(26px,3.4vw,38px)", marginTop: 10, letterSpacing: "-0.02em" }}>De tu dominio a la primera reunión agendada</h2>
-          <div className="flow-grid">
-            <div className="flow-step"><div className="num">01</div><h3>Nos das tu web</h3><p>La colmena la analiza junto a tus competidores y define tu cliente ideal.</p></div>
-            <div className="flow-step"><div className="num">02</div><h3>Elegimos canales</h3><p>Email frío, Meta Ads o LinkedIn Ads según dónde esté tu cliente.</p></div>
-            <div className="flow-step"><div className="num">03</div><h3>La colmena trabaja</h3><p>Busca, escribe, publica anuncios y responde, 24/7, sin supervisión constante.</p></div>
-            <div className="flow-step"><div className="num">04</div><h3>Tú recibes reuniones</h3><p>Llegan agendadas en tu calendario, con el contexto completo del lead.</p></div>
+      <section className="colmena-como" aria-label="Cómo funciona Colmena">
+        <div className="cmc-wrap">
+          <h2>Cómo funciona</h2>
+          <div className="cmc-grid">
+            {STEPS.map((s, i) => (
+              <article className="cmc-step" key={i}>
+                <div className="cmc-track" aria-hidden="true" />
+                <span className="cmc-num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                <h3><Lines parts={s.title} /></h3>
+                <p>{s.text}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="channels" id="canales">
-        <div className="wrap">
-          <div className="k mono" style={{ color: "var(--accent)", fontSize: 12, letterSpacing: "0.08em" }}>// Multicanal</div>
-          <h2 style={{ fontSize: "clamp(26px,3.4vw,38px)", marginTop: 10, letterSpacing: "-0.02em" }}>El agente elige el canal según tu tipo de cliente</h2>
-          <div className="ch-grid">
-            <div className="ch-card"><h3>Email en frío</h3><p>Prospección directa a decisores, con dominios propios calentados y seguimiento automático.</p><span className="tag">AG-06 · AG-07 · AG-08</span></div>
-            <div className="ch-card"><h3>Meta Ads</h3><p>Ideal para negocios B2C o con ciclo de venta corto: Facebook e Instagram.</p><span className="tag">AG-11 · AG-13 · AG-15</span></div>
-            <div className="ch-card"><h3>LinkedIn Ads</h3><p>Para B2B y ventas complejas: llega a cargos y empresas concretas.</p><span className="tag">AG-12 · AG-13 · AG-15</span></div>
+      <section className="colmena-canales" aria-label="Canales de captación de Colmena">
+        <div className="cc-bg" aria-hidden="true">
+          <div className="cc-lines" />
+          <div className="cc-shape s1" />
+          <div className="cc-shape s2" />
+          <div className="cc-shape s3" />
+        </div>
+        <div className="cc-wrap">
+          <h2>Email, Meta y LinkedIn</h2>
+          <div className="cc-grid">
+            {CHANNELS.map((c) => (
+              <article className="cc-card" key={c.img}>
+                <div className="cc-top">
+                  <span className="cc-icon" aria-hidden="true">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/imagenes/${c.img}.webp`} alt="" width={64} height={64} loading="lazy" decoding="async" />
+                  </span>
+                  <h3><Lines parts={c.title} /></h3>
+                </div>
+                <p>{c.text}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="pricing" id="precios">
-        <div className="wrap">
-          <div className="k mono" style={{ color: "var(--accent)", fontSize: 12, letterSpacing: "0.08em" }}>// Licencia</div>
-          <h2 style={{ fontSize: "clamp(26px,3.4vw,38px)", marginTop: 10, letterSpacing: "-0.02em" }}>Un precio, la colmena entera</h2>
-          <div className="price-grid">
-            <div className="price-card">
-              <div className="label">PAGO SEMESTRAL</div>
-              <div className="amount">1.500€<span>/6 meses</span></div>
-              <ul>
-                <li>Los 25 agentes activos</li>
-                <li>Email + Meta Ads + LinkedIn Ads</li>
-                <li>Soporte por email</li>
-              </ul>
-              <CheckoutButton plan="semiannual" label="Contratar" variant="ghost" />
-            </div>
-            <div className="price-card featured">
-              <div className="badge">2 MESES GRATIS</div>
-              <div className="label">PAGO ANUAL</div>
-              <div className="amount">3.000€<span>/año</span></div>
-              <ul>
-                <li>Los 25 agentes activos</li>
-                <li>Email + Meta Ads + LinkedIn Ads</li>
-                <li>Soporte prioritario</li>
-              </ul>
-              <CheckoutButton plan="annual" label="Contratar" variant="primary" />
-            </div>
+      <section className="colmena-precios" id="precios" aria-label="Planes de Colmena">
+        <div className="cp-wrap">
+          <article className="cp-card">
+            <h3>Pago semestral</h3>
+            <div className="cp-price"><span className="cp-amount">1.500 €</span><span className="cp-period">/ 6 meses</span></div>
+            <ul className="cp-features">
+              <li>25 agentes de IA siempre activos</li>
+              <li>Gestión de campañas Email</li>
+              <li>Meta Ads y LinkedIn Ads</li>
+              <li>Soporte estándar vía email</li>
+            </ul>
+            <CheckoutButton plan="semiannual" label="Empezar ahora" />
+          </article>
+          <article className="cp-card cp-annual">
+            <span className="cp-badge">Ahorra 100 €</span>
+            <h3>Pago anual</h3>
+            <div className="cp-price"><span className="cp-amount">2.900 €</span><span className="cp-period">/ año</span></div>
+            <p className="cp-saving">Frente a 3.000 € por dos pagos semestrales.</p>
+            <ul className="cp-features">
+              <li><span><strong>25 agentes v.2</strong> full-stack</span></li>
+              <li>Canales: Email, Meta y LinkedIn</li>
+              <li><strong>Soporte prioritario 24/7</strong></li>
+              <li>Actualizaciones automáticas</li>
+            </ul>
+            <CheckoutButton plan="annual" label="Obtener plan anual" />
+          </article>
+        </div>
+        <p className="cp-note">Costes de envío, anuncios y APIs de terceros no incluidos.</p>
+      </section>
+
+      <section className="colmena-faq" aria-label="Preguntas frecuentes">
+        <div className="cf-layout">
+          <div>
+            <span className="cf-label">PREGUNTAS FRECUENTES</span>
+            <h2 className="cf-title">Resolvemos tus<br />dudas</h2>
+            <p className="cf-intro">Todo lo que necesitas saber sobre Colmena Life, sus agentes de IA y cómo elegir el plan que mejor encaja contigo.</p>
+            <div className="cf-rule" aria-hidden="true" />
           </div>
-          <p style={{ color: "var(--text-dim)", fontSize: 13, marginTop: 18 }}>
-            El botón "Contratar" ya llama de verdad a Stripe Checkout — solo hace falta tener <code>STRIPE_SECRET_KEY</code> y los price IDs configurados (ver README).
-          </p>
+          <div className="cf-list">
+            {FAQ.map((f) => (
+              <article className="cf-card" key={f.q}>
+                <h3 className="cf-question">{f.q}</h3>
+                <p className="cf-answer">{f.a}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <footer>
-        <div className="wrap">
-          <div className="logo"><span className="dot" />COLMENA</div>
-          <div className="f-text">© 2026 Colmena. Licencia de uso anual o semestral. Costes de envío, anuncios y APIs de terceros no incluidos.</div>
+      <footer className="colmena-footer">
+        <div className="cfo-wrap">
+          <span>© 2026 Colmena Life</span>
+          <Link href="/dashboard">Acceso clientes →</Link>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
