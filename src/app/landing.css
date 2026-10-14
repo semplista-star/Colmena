@@ -1,0 +1,190 @@
+/* Web pública de Colmena Life (diseño entregado por el cliente, 14-oct-2026).
+   Cada bloque va con su propio prefijo de clase (.colmena-header, .colmena-premium,
+   .colmena-team-grid, .colmena-equipos, .colmena-como, .colmena-canales,
+   .colmena-precios, .colmena-faq), así que no afecta al panel /dashboard. */
+
+.colmena-landing { background:#FAFBFD; color:#151C2B; font-family:Inter,"Segoe UI",Arial,sans-serif; line-height:normal; }
+
+.colmena-header {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2px 20px;
+  background: #f4f8fc;
+  text-align: center;
+}
+.colmena-header .ch-logo {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.colmena-header .ch-logo img {
+  display: block;
+  width: 300px;
+  max-width: 100%;
+  height: auto;
+}
+.colmena-header .ch-logo:focus-visible {
+  outline: 2px solid #2053C7;
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .colmena-header .ch-logo img { width: 250px; }
+}
+
+.colmena-premium { --colmena-blue:#2053C7; width:100%; padding:12px; box-sizing:border-box; font-family:Arial,Helvetica,sans-serif; }
+.colmena-premium * { box-sizing:border-box; }
+.colmena-premium .colmena-panel { position:relative; isolation:isolate; overflow:hidden; display:flex; align-items:center; justify-content:center; width:100%; max-width:1240px; min-height:550px; margin:auto; padding:75px 30px; border-radius:16px; background:#373b3e url('/imagenes/fondo-colmena.webp') center / cover no-repeat; box-shadow:0 18px 45px rgba(0,0,0,.16); }
+.colmena-premium .colmena-panel::before { content:""; position:absolute; inset:0; z-index:0; pointer-events:none; background:radial-gradient(ellipse at center,rgba(12,17,23,.78) 0%,rgba(12,17,23,.66) 55%,rgba(12,17,23,.38) 100%); }
+.colmena-premium .colmena-content { position:relative; z-index:1; width:100%; max-width:1040px; text-align:center; }
+.colmena-premium .colmena-title { margin:0 0 24px; padding:0; color:#fff; font-family:Arial,Helvetica,sans-serif; font-size:clamp(34px,5.1vw,64px); font-weight:700; line-height:1.12; letter-spacing:-.035em; }
+.colmena-premium .colmena-title span { display:block; }
+.colmena-premium .colmena-description { max-width:700px; margin:0 auto 34px; padding:0; color:#f2f5f8; font-family:Arial,Helvetica,sans-serif; font-size:16px; font-weight:400; line-height:1.65; }
+.colmena-premium a.colmena-button { display:inline-flex; align-items:center; justify-content:center; min-width:225px; min-height:64px; padding:16px 34px; border:1px solid var(--colmena-blue); border-radius:36px; background:var(--colmena-blue); color:#fff; font:700 15px Arial,Helvetica,sans-serif; line-height:1.2; letter-spacing:.06em; text-align:center; text-decoration:none; cursor:pointer; box-shadow:0 0 28px rgba(32,83,199,.32),0 8px 24px rgba(0,0,0,.2); transition:transform .2s ease,box-shadow .2s ease; }
+.colmena-premium a.colmena-button:hover { background:var(--colmena-blue); color:#fff; transform:translateY(-2px); box-shadow:0 0 38px rgba(32,83,199,.44),0 10px 26px rgba(0,0,0,.25); }
+.colmena-premium a.colmena-button:focus-visible { outline:3px solid #fff; outline-offset:5px; }
+@media(max-width:600px) {
+.colmena-premium { padding:8px; }
+.colmena-premium .colmena-panel { min-height:460px; padding:50px 20px; border-radius:12px; }
+.colmena-premium .colmena-title { font-size:clamp(32px,8vw,43px); margin-bottom:22px; }
+.colmena-premium .colmena-title span { display:inline; }
+.colmena-premium .colmena-description { font-size:15px; line-height:1.65; margin-bottom:28px; }
+.colmena-premium a.colmena-button { min-width:195px; min-height:58px; font-size:14px; }
+}
+@media(prefers-reduced-motion:reduce) {
+.colmena-premium a.colmena-button { transition:none; }
+.colmena-premium a.colmena-button:hover { transform:none; }
+}
+
+.colmena-team-grid{--azul:#2053C7;--texto:#151C2B;padding:clamp(44px,7vw,92px) 20px;background:#FAFBFD;color:var(--texto);font-family:Inter,"Segoe UI",Arial,sans-serif;}
+.colmena-team-grid,.colmena-team-grid *{box-sizing:border-box;}
+.colmena-team-grid .ctg-wrap{max-width:1180px;margin:0 auto;}
+.colmena-team-grid h2{margin:0 0 clamp(32px,5vw,62px);text-align:center;color:var(--texto);font:650 clamp(30px,4.2vw,52px)/1.12 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.045em;}
+.colmena-team-grid .ctg-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;}
+.colmena-team-grid .ctg-card{position:relative;overflow:hidden;min-height:292px;padding:30px 28px;border:1px solid rgba(32,83,199,.24);border-radius:0;background:linear-gradient(145deg,#FFF 30%,#F1F5FD);box-shadow:0 12px 28px rgba(20,34,62,.14),0 3px 8px rgba(20,34,62,.08);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;}
+.colmena-team-grid .ctg-card::before{content:"";position:absolute;left:28px;right:28px;top:0;height:2px;background:linear-gradient(90deg,transparent,rgba(32,83,199,.55),transparent);}
+.colmena-team-grid .ctg-card:hover{transform:translateY(-4px);border-color:rgba(32,83,199,.55);box-shadow:0 22px 42px rgba(20,34,62,.20),0 6px 14px rgba(32,83,199,.12);}
+.colmena-team-grid .ctg-icon{display:flex;align-items:center;justify-content:center;width:84px;height:84px;margin-bottom:22px;border-radius:18px;overflow:hidden;background:#F3F4F6;border:1px solid #E1E5EC;box-shadow:0 5px 12px rgba(20,34,62,.12);}
+.colmena-team-grid .ctg-icon img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;object-position:center;}
+.colmena-team-grid h3{margin:0 0 13px;color:var(--texto);font:650 clamp(21px,2.1vw,26px)/1.16 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.025em;}
+.colmena-team-grid .ctg-card p{margin:0;max-width:310px;color:#566174;font-size:15px;line-height:1.65;}
+@media(max-width:900px){.colmena-team-grid .ctg-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:560px){.colmena-team-grid{padding:44px 16px;}.colmena-team-grid .ctg-grid{grid-template-columns:1fr;gap:22px;}.colmena-team-grid .ctg-card{min-height:0;padding:26px;border-radius:0;}.colmena-team-grid .ctg-icon{margin-bottom:18px;}.colmena-team-grid .ctg-card p{max-width:none;}}
+@media(prefers-reduced-motion:reduce){.colmena-team-grid .ctg-card{transition:none;}.colmena-team-grid .ctg-card:hover{transform:none;}}
+
+.colmena-equipos{--azul:#2053C7;--texto:#182230;--gris:#637083;padding:clamp(40px,7vw,88px) 20px;background:#F3F4F6;color:var(--texto);font-family:Inter,"Segoe UI",Arial,sans-serif;}
+.colmena-equipos,.colmena-equipos *{box-sizing:border-box}
+.colmena-equipos .cm-wrap{max-width:1100px;margin:auto}
+.colmena-equipos .cm-label{display:flex;align-items:center;gap:10px;margin:0 0 18px;color:var(--azul);font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;}
+.colmena-equipos .cm-label::before{content:"";width:18px;height:20px;background:var(--azul);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);}
+.colmena-equipos h2{margin:0 0 38px;color:var(--texto);font:600 clamp(28px,4vw,46px)/1.15 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.035em;}
+.colmena-equipos .cm-team{margin:12px 0;border:1px solid #DEE3EB;border-radius:0;background:white;overflow:hidden;}
+.colmena-equipos .cm-team[open]{border-color:#A9BFEF;box-shadow:0 12px 35px rgba(24,34,48,.05);}
+.colmena-equipos summary{display:flex;align-items:center;gap:24px;min-height:88px;padding:25px 28px;cursor:pointer;list-style:none;}
+.colmena-equipos summary::-webkit-details-marker{display:none}
+.colmena-equipos summary:hover{background:#F7F9FD}
+.colmena-equipos summary:focus-visible{outline:3px solid var(--azul);outline-offset:-5px;border-radius:0;}
+.colmena-equipos .cm-range{flex:0 0 74px;color:var(--azul);font:500 13px/1.4 ui-monospace,Consolas,monospace;}
+.colmena-equipos .cm-title{flex:1;min-width:0;font-size:clamp(17px,2vw,22px);font-weight:600;letter-spacing:-.02em;}
+.colmena-equipos .cm-toggle{flex:0 0 34px;width:34px;height:34px;position:relative;border:1px solid #DCE5F7;border-radius:0;background:#F2F6FF;}
+.colmena-equipos .cm-toggle::before,.colmena-equipos .cm-toggle::after{content:"";position:absolute;top:50%;left:50%;width:12px;height:2px;background:var(--azul);transform:translate(-50%,-50%);}
+.colmena-equipos .cm-toggle::after{transform:translate(-50%,-50%) rotate(90deg);}
+.colmena-equipos details[open] .cm-toggle::after{display:none}
+.colmena-equipos .cm-agents{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 28px 28px;padding-top:20px;border-top:1px solid #E9EDF3;}
+.colmena-equipos .cm-agent{padding:22px;border:1px solid #E5EAF2;border-radius:0;background:linear-gradient(145deg,#F8FAFD,#FFF);}
+.colmena-equipos .cm-id{display:block;margin-bottom:12px;color:var(--azul);font:500 11px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.06em;}
+.colmena-equipos h3{margin:0 0 8px;color:var(--texto);font:600 17px/1.3 Inter,"Segoe UI",Arial,sans-serif;}
+.colmena-equipos .cm-agent p{margin:0;color:var(--gris);font-size:14px;line-height:1.65;}
+@media(max-width:800px){.colmena-equipos .cm-agents{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:520px){.colmena-equipos{padding:40px 16px}.colmena-equipos summary{padding:20px 16px;gap:12px}.colmena-equipos .cm-range{flex-basis:54px;font-size:11px}.colmena-equipos .cm-toggle{flex-basis:30px;width:30px;height:30px;}.colmena-equipos .cm-agents{grid-template-columns:1fr;margin:0 16px 16px;}.colmena-equipos .cm-agent{padding:18px}}
+
+.colmena-como{--azul:#2053C7;--texto:#151C2B;padding:clamp(48px,7vw,90px) 20px;background:#FAFBFD;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--texto);}
+.colmena-como,.colmena-como *{box-sizing:border-box;}
+.colmena-como .cmc-wrap{max-width:1180px;margin:auto;}
+.colmena-como h2{margin:0 0 clamp(36px,6vw,70px);text-align:center;color:var(--texto);font:650 clamp(32px,4.5vw,54px)/1.12 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.045em;}
+.colmena-como .cmc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;}
+.colmena-como .cmc-step{min-width:0;padding:28px 24px 32px;border:1px solid #E2E8F2;border-radius:0;background:linear-gradient(150deg,#FFF,#F3F6FC);box-shadow:0 10px 24px rgba(21,35,65,.09),0 2px 5px rgba(21,35,65,.04);}
+.colmena-como .cmc-track{display:flex;align-items:center;gap:12px;height:18px;margin-bottom:24px;}
+.colmena-como .cmc-track::before{content:"";flex:0 0 12px;width:12px;height:12px;border-radius:50%;background:var(--azul);box-shadow:0 0 0 5px rgba(32,83,199,.09);}
+.colmena-como .cmc-track::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(32,83,199,.45),rgba(32,83,199,.08));}
+.colmena-como .cmc-num{display:block;margin-bottom:16px;color:var(--azul);font-size:40px;line-height:1;font-weight:650;letter-spacing:-.04em;font-variant-numeric:tabular-nums;}
+.colmena-como h3{margin:0 0 16px;min-height:58px;color:var(--texto);font:650 clamp(21px,2vw,25px)/1.16 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.025em;}
+.colmena-como .cmc-step p{margin:0;color:#566174;font-size:15px;line-height:1.65;}
+@media(max-width:1000px){.colmena-como .cmc-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:560px){.colmena-como{padding:44px 16px;}.colmena-como .cmc-grid{grid-template-columns:1fr;gap:18px;}.colmena-como .cmc-step{padding:25px;}.colmena-como h3{min-height:0;}}
+
+.colmena-canales{--azul:#2053C7;--texto:#151C2B;position:relative;isolation:isolate;overflow:hidden;padding:clamp(48px,7vw,90px) 20px;background:#F6F7F9;color:var(--texto);font-family:Inter,"Segoe UI",Arial,sans-serif;}
+.colmena-canales,.colmena-canales *{box-sizing:border-box;}
+.colmena-canales .cc-bg{position:absolute;inset:0;z-index:-1;pointer-events:none;}
+.colmena-canales .cc-shape{position:absolute;width:420px;height:460px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(135deg,rgba(116,126,143,.12),rgba(180,187,197,.025));animation:cc-drift 22s ease-in-out infinite alternate;}
+.colmena-canales .cc-shape.s1{left:-170px;top:-220px;}
+.colmena-canales .cc-shape.s2{right:-120px;bottom:-260px;animation-delay:-8s;}
+.colmena-canales .cc-shape.s3{left:43%;top:15%;width:240px;height:265px;opacity:.45;animation-delay:-14s;animation-duration:28s;}
+.colmena-canales .cc-lines{position:absolute;inset:-25%;background:repeating-linear-gradient(135deg,transparent 0 145px,rgba(116,126,143,.045) 146px 147px,transparent 148px 290px);animation:cc-flow 35s ease-in-out infinite alternate;}
+.colmena-canales .cc-wrap{max-width:1180px;margin:0 auto;}
+.colmena-canales h2{margin:0 0 clamp(36px,5vw,60px);color:var(--texto);font:650 clamp(31px,4.3vw,52px)/1.12 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.04em;}
+.colmena-canales .cc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}
+.colmena-canales .cc-card{min-width:0;padding:28px;border:1px solid #DFE5EF;border-radius:0;background:rgba(255,255,255,.88);box-shadow:0 12px 28px rgba(24,36,60,.10),0 2px 6px rgba(24,36,60,.04);}
+.colmena-canales .cc-top{display:flex;align-items:center;gap:17px;min-height:64px;margin-bottom:24px;}
+.colmena-canales .cc-icon{flex:0 0 64px;width:64px;height:64px;overflow:hidden;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#F3F4F6;border:1px solid #DFE5EF;}
+.colmena-canales .cc-icon img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;object-position:center;}
+.colmena-canales h3{margin:0;color:var(--texto);font:650 clamp(20px,2vw,25px)/1.18 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.025em;}
+.colmena-canales .cc-card p{margin:0;color:#566174;font-size:15px;line-height:1.7;}
+@keyframes cc-drift{from{transform:translate3d(0,0,0) rotate(-8deg);}to{transform:translate3d(32px,24px,0) rotate(6deg);}}
+@keyframes cc-flow{from{transform:translate3d(-18px,-12px,0);}to{transform:translate3d(22px,18px,0);}}
+@media(max-width:850px){.colmena-canales .cc-grid{grid-template-columns:1fr;gap:20px;}}
+@media(max-width:560px){.colmena-canales{padding:44px 16px;}.colmena-canales .cc-card{padding:24px;}.colmena-canales .cc-top{gap:14px;margin-bottom:18px;}}
+@media(prefers-reduced-motion:reduce){.colmena-canales .cc-shape,.colmena-canales .cc-lines{animation:none;}}
+
+.colmena-precios{--azul:#2053C7;--texto:#151C2B;padding:clamp(44px,7vw,88px) 20px;background:#F6F7F9;color:var(--texto);font-family:Inter,"Segoe UI",Arial,sans-serif;}
+.colmena-precios,.colmena-precios *{box-sizing:border-box;}
+.colmena-precios .cp-wrap{max-width:1000px;margin:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}
+.colmena-precios .cp-card{position:relative;display:flex;flex-direction:column;min-width:0;padding:34px;border:1px solid #DCE3EF;border-radius:0;background:#FFF;box-shadow:0 14px 32px rgba(24,36,60,.12),0 3px 8px rgba(24,36,60,.05);}
+.colmena-precios .cp-card.cp-annual{border:2px solid var(--azul);background:linear-gradient(145deg,#FFF 55%,#EFF4FF);}
+.colmena-precios .cp-badge{align-self:flex-start;margin:0 0 22px;padding:8px 14px;background:#EAF1FF;color:var(--azul);border:1px solid #C9D9FB;border-radius:100px;font-size:13px;font-weight:700;}
+.colmena-precios h3{margin:0 0 22px;color:var(--texto);font:650 clamp(24px,3vw,32px)/1.15 Inter,"Segoe UI",Arial,sans-serif;letter-spacing:-.03em;}
+.colmena-precios .cp-price{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.colmena-precios .cp-amount{font-size:clamp(42px,6vw,62px);line-height:1.05;font-weight:650;letter-spacing:-.055em;color:var(--azul);white-space:nowrap;}
+.colmena-precios .cp-period{color:#637083;font-size:15px;}
+.colmena-precios .cp-saving{margin:0 0 22px;color:#637083;font-size:13px;line-height:1.5;}
+.colmena-precios .cp-features{list-style:none;margin:16px 0 30px;padding:0;}
+.colmena-precios .cp-features li{display:flex;align-items:flex-start;gap:12px;border-top:1px solid #E1E6EF;padding:17px 0;font-size:15px;line-height:1.5;color:#354052;}
+.colmena-precios .cp-features li:last-child{border-bottom:1px solid #E1E6EF;}
+.colmena-precios .cp-features li::before{content:"✓";color:var(--azul);font-weight:700;flex-shrink:0;}
+.colmena-precios .cp-button{display:flex;align-items:center;justify-content:center;margin-top:auto;min-height:54px;padding:15px 20px;border:1px solid var(--azul);border-radius:100px;background:#FFF;color:var(--azul);text-decoration:none;font-size:15px;font-weight:600;text-align:center;transition:background .2s,color .2s,box-shadow .2s;}
+.colmena-precios .cp-annual .cp-button{background:var(--azul);color:#FFF;box-shadow:0 7px 18px rgba(32,83,199,.20);}
+.colmena-precios .cp-button:hover{background:#EAF1FF;}
+.colmena-precios .cp-annual .cp-button:hover{background:#1944A5;}
+.colmena-precios .cp-button:focus-visible{outline:3px solid #7DA4F4;outline-offset:4px;}
+.colmena-precios .cp-note{max-width:1000px;margin:24px auto 0;text-align:center;color:#637083;font-size:12px;line-height:1.65;}
+@media(max-width:680px){.colmena-precios{padding:40px 16px;}.colmena-precios .cp-wrap{grid-template-columns:1fr;gap:24px;}.colmena-precios .cp-card{padding:28px 24px;}}
+@media(prefers-reduced-motion:reduce){.colmena-precios .cp-button{transition:none;}}
+
+.colmena-faq{--cf-blue:#2053C7;box-sizing:border-box;padding:clamp(36px,6vw,80px) 24px;background:#f3f5f8;color:#182332;font-family:Arial,Helvetica,sans-serif;}
+.colmena-faq *{box-sizing:border-box;}
+.colmena-faq .cf-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(32px,6vw,80px);max-width:1200px;margin:auto;align-items:start;}
+.colmena-faq .cf-label{display:block;margin-bottom:20px;color:var(--cf-blue);font-size:12px;font-weight:700;letter-spacing:.18em;line-height:1.5;}
+.colmena-faq .cf-title{margin:0 0 22px;color:#182332;font:700 clamp(32px,4vw,48px)/1.08 Arial,Helvetica,sans-serif;letter-spacing:-.04em;}
+.colmena-faq .cf-intro{max-width:380px;margin:0;color:#536173;font-size:16px;line-height:1.7;}
+.colmena-faq .cf-rule{width:64px;height:3px;margin-top:26px;background:var(--cf-blue);}
+.colmena-faq .cf-list{display:grid;gap:18px;}
+.colmena-faq .cf-card{margin:0;padding:28px;border:1px solid #dce3ee;border-left:3px solid var(--cf-blue);border-radius:0;background:#fff;box-shadow:0 8px 24px rgba(24,35,50,.04);}
+.colmena-faq .cf-question{margin:0 0 12px;color:#182332;font:700 clamp(19px,2vw,23px)/1.3 Arial,Helvetica,sans-serif;letter-spacing:-.025em;}
+.colmena-faq .cf-answer{margin:0;color:#536173;font-size:15px;line-height:1.75;}
+@media(max-width:750px){.colmena-faq{padding:40px 18px;}.colmena-faq .cf-layout{grid-template-columns:1fr;gap:30px;}.colmena-faq .cf-intro{max-width:none;}.colmena-faq .cf-card{padding:24px 20px;}}
+
+/* Botones de pago reales (Stripe) dentro de las tarjetas de precio */
+.colmena-precios .cp-checkout { margin-top:auto; display:flex; flex-direction:column; gap:10px; }
+.colmena-precios .cp-checkout .cp-button { width:100%; cursor:pointer; font-family:inherit; }
+.colmena-precios .cp-checkout input { width:100%; min-height:50px; padding:12px 18px; border:1px solid #C9D6EE; border-radius:100px; font:inherit; font-size:15px; color:#151C2B; background:#fff; }
+.colmena-precios .cp-checkout input:focus-visible { outline:3px solid #7DA4F4; outline-offset:2px; }
+.colmena-precios .cp-checkout .cp-secondary { background:none; border:none; color:#637083; font:inherit; font-size:13px; cursor:pointer; text-decoration:underline; }
+.colmena-precios .cp-checkout .cp-error { margin:0; color:#A32020; font-size:13px; line-height:1.5; }
+.colmena-precios .cp-button:disabled { opacity:.6; cursor:default; }
+
+/* Pie con acceso al panel de clientes */
+.colmena-footer { padding:28px 20px; background:#FAFBFD; border-top:1px solid #E1E6EF; font-family:Inter,"Segoe UI",Arial,sans-serif; }
+.colmena-footer .cfo-wrap { max-width:1180px; margin:auto; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; color:#637083; font-size:13px; }
+.colmena-footer a { color:#2053C7; text-decoration:none; font-weight:600; }
+.colmena-footer a:hover { text-decoration:underline; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }

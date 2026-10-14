@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
 });
 
 const bodySchema = z.object({
-  plan: z.enum(["annual", "semiannual"]), // 3000€/año o 1500€/6 meses
+  plan: z.enum(["annual", "semiannual"]), // 2.900€/año o 1.500€/6 meses
   customerEmail: z.string().email(),
 });
 
@@ -15,28 +15,28 @@ const bodySchema = z.object({
 // Crea una sesión de pago de Stripe y devuelve la URL de checkout.
 // Requiere STRIPE_SECRET_KEY y los IDs de precio creados en el dashboard de Stripe
 // (ver README -> "APIs necesarias" -> Stripe).
+// Lo que ve el visitante en la web si el cobro aún no está configurado; el
+// detalle técnico va solo al log del servidor.
+const NOT_READY = "La contratación online aún no está disponible. Vuelve a intentarlo en unos días.";
+
 export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
-    return NextResponse.json(
-      { error: "Falta STRIPE_SECRET_KEY en el servidor." },
-      { status: 500 }
-    );
+    console.error("[checkout] Falta STRIPE_SECRET_KEY");
+    return NextResponse.json({ error: NOT_READY }, { status: 503 });
   }
 
   const parsed = bodySchema.safeParse(await req.json());
-  if (!parsed.success) return NextResponse.json({ error: "datos inválidos" }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Revisa el email: no parece válido." }, { status: 400 });
   const { plan, customerEmail } = parsed.data;
 
   const priceId =
     plan === "annual"
-      ? process.env.STRIPE_PRICE_ANNUAL   // 3000€ / 1 año
+      ? process.env.STRIPE_PRICE_ANNUAL   // 2.900€ / 1 año
       : process.env.STRIPE_PRICE_SEMIANNUAL; // 1500€ / 6 meses
 
   if (!priceId) {
-    return NextResponse.json(
-      { error: `Falta el price ID de Stripe para el plan "${plan}" (ver .env.example).` },
-      { status: 500 }
-    );
+    console.error(`[checkout] Falta el price ID de Stripe para el plan "${plan}"`);
+    return NextResponse.json({ error: NOT_READY }, { status: 503 });
   }
 
   const session = await stripe.checkout.sessions.create({

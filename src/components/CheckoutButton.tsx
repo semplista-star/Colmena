@@ -1,21 +1,20 @@
 "use client";
 
-import { useState, type CSSProperties, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 interface CheckoutButtonProps {
   plan: "annual" | "semiannual";
   label: string;
-  variant: "primary" | "ghost";
 }
 
 type Stage = "idle" | "email" | "loading" | "error";
 
-export default function CheckoutButton({ plan, label, variant }: CheckoutButtonProps) {
+// Botón de contratación de la web pública: pide el email y lleva a Stripe Checkout
+// (/api/billing/checkout). Los estilos viven en src/app/landing.css (.cp-checkout).
+export default function CheckoutButton({ plan, label }: CheckoutButtonProps) {
   const [stage, setStage] = useState<Stage>("idle");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
-
-  const btnClass = variant === "primary" ? "btn-primary" : "btn-ghost";
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -28,46 +27,36 @@ export default function CheckoutButton({ plan, label, variant }: CheckoutButtonP
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan, customerEmail: email }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok || !data.checkoutUrl) {
-        setError(data.error ?? "No se pudo iniciar el pago. Inténtalo de nuevo.");
+        setError(data.error ?? "No se pudo iniciar el pago. Inténtalo de nuevo en unos minutos.");
         setStage("error");
         return;
       }
 
       window.location.href = data.checkoutUrl;
     } catch {
-      setError("Error de red al contactar con el servidor de pago.");
+      setError("No hay conexión con el servidor de pago. Revisa tu conexión e inténtalo de nuevo.");
       setStage("error");
     }
   }
 
-  const buttonStyle: CSSProperties = {
-    fontFamily: "inherit",
-    cursor: "pointer",
-    border: variant === "ghost" ? undefined : "none",
-  };
-
-  if (stage === "idle" || stage === "error") {
+  if (stage === "idle") {
     return (
-      <div>
-        <button type="button" className={btnClass} style={buttonStyle} onClick={() => setStage("email")}>
+      <div className="cp-checkout">
+        <button type="button" className="cp-button" onClick={() => setStage("email")}>
           {label}
         </button>
-        {stage === "error" && error && (
-          <p style={{ color: "var(--accent)", fontSize: 12.5, marginTop: 8, maxWidth: 220 }}>{error}</p>
-        )}
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}
-    >
+    <form className="cp-checkout" onSubmit={handleSubmit}>
+      <label htmlFor={`checkout-email-${plan}`} className="sr-only">Email de tu empresa</label>
       <input
+        id={`checkout-email-${plan}`}
         type="email"
         required
         autoFocus
@@ -75,30 +64,14 @@ export default function CheckoutButton({ plan, label, variant }: CheckoutButtonP
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         disabled={stage === "loading"}
-        style={{
-          background: "var(--surface-2)",
-          border: "1px solid var(--hairline)",
-          borderRadius: 6,
-          padding: "10px 12px",
-          color: "var(--text)",
-          fontSize: 14,
-          width: "100%",
-        }}
       />
-      <div style={{ display: "flex", gap: 8 }}>
-        <button type="submit" className={btnClass} style={buttonStyle} disabled={stage === "loading"}>
-          {stage === "loading" ? "Redirigiendo…" : "Ir a pago"}
-        </button>
-        <button
-          type="button"
-          className="btn-ghost"
-          style={{ fontFamily: "inherit", cursor: "pointer" }}
-          disabled={stage === "loading"}
-          onClick={() => setStage("idle")}
-        >
-          Cancelar
-        </button>
-      </div>
+      <button type="submit" className="cp-button" disabled={stage === "loading"}>
+        {stage === "loading" ? "Abriendo el pago…" : "Continuar al pago"}
+      </button>
+      {stage === "error" && error && <p className="cp-error" role="alert">{error}</p>}
+      <button type="button" className="cp-secondary" disabled={stage === "loading"} onClick={() => setStage("idle")}>
+        Cancelar
+      </button>
     </form>
   );
 }
