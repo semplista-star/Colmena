@@ -1,371 +1,240 @@
-# Prompt para Base44 — Mimper Ops IA (Presupuestos IA + Costes de Transporte IA)
+# Prompt para Base44 — Motor de automatización Mimper (Pipedrive + Sage 200)
 
-Este documento tiene dos partes:
+> Versión 2. Sustituye a la versión anterior, que creaba un CRM propio.
+> Ahora **Base44 no es un CRM**: es el **motor invisible** que conecta Pipedrive y Sage 200,
+> con un panel de control mínimo. Los comerciales siguen trabajando **solo en Pipedrive**.
 
-1. **Cómo usarlo en Base44** (pasos para ti, desde cero).
-2. **Los prompts** que tienes que copiar y pegar en Base44, por fases.
+## Cómo usarlo
 
----
-
-## 1. Cómo usarlo en Base44 (paso a paso)
-
-1. Entra en **base44.com** y crea una cuenta (o inicia sesión).
-2. Pulsa **"Create new app"**.
-3. Copia el bloque **PROMPT 1 — CONTEXTO Y APP COMPLETA** (más abajo) y pégalo entero en el chat de Base44. Envía.
-4. Espera a que Base44 genere la app. Revisa que existan las pantallas y las tablas (en Base44 se llaman *Entities*, en el menú **Data**).
-5. Sube los archivos:
-   - En la pantalla **Tarifas de transporte** sube `Tarifa nacional Jovitrans 2026 MIMPER.xlsx`.
-   - En la pantalla **Facturas de transporte** sube los PDFs de facturas de Jovitrans (puedes subirlos de 10 en 10).
-   - En la pantalla **Histórico de presupuestos** sube los presupuestos antiguos (PDF, Excel o Word) y la lista de precios de productos.
-   - Si Base44 no te deja subir un archivo muy grande, pártelo (un PDF por archivo, o zips de menos de 25 MB).
-6. Después pega los prompts **2, 3, 4 y 5** uno a uno, **esperando a que termine cada uno** y probando la app entre medias. Base44 funciona mucho mejor por pasos que con todo de golpe.
-7. Al final pega el **PROMPT 6 — PRUEBAS** para que la propia app se valide con casos reales.
-
-> Consejo: si algo sale mal, no rehagas la app. Escríbele a Base44 en el chat qué falla exactamente ("en la pantalla X, al pulsar Y, sale Z y debería salir W").
+1. En Base44 crea una **app nueva** (no reutilices la anterior, porque arrastraría las pantallas de CRM).
+2. Pega el **PROMPT 1**. Cuando termine, pega el 2, después el 3, etc. Prueba entre uno y otro.
+3. Cuando Base44 pida **secretos o claves** (Secrets / Environment variables), introduce:
+   - `PIPEDRIVE_API_TOKEN`: en Pipedrive, Configuración personal → API.
+   - `PIPEDRIVE_DOMAIN`: el subdominio, p. ej. `mimper` si entráis por `mimper.pipedrive.com`.
+   - Los datos de Sage 200, cuando el partner de Sage los dé (ver PROMPT 4).
+4. Importa los CSV de tarifa de transporte (`TarifaTransporte.csv`, `ZonaCP.csv`,
+   `CondicionRecargo.csv`) en las tablas que cree el PROMPT 2.
 
 ---
 
-## 2. Los prompts
-
-### PROMPT 1 — CONTEXTO Y APP COMPLETA
+### PROMPT 1 — QUÉ ES ESTO (contexto + reglas)
 
 ```
-Quiero que construyas una aplicación web interna llamada "Mimper Ops IA".
-Te explico todo desde cero: quién la encarga, para quién es, qué tiene que hacer y cómo.
+Vas a construir "Mimper Autopilot": un MOTOR DE AUTOMATIZACIÓN, no un CRM.
+Lee todo antes de empezar.
 
-=====================================================================
-1. QUIÉN SOMOS: COLMENA
-=====================================================================
-Colmena (colmenalife.com) es una plataforma de agentes de inteligencia artificial
-que automatiza procesos de empresas. Empezó como un sistema de 25 agentes de IA para
-captación de clientes (analizar la web del cliente, encontrar contactos, escribir
-emails personalizados, hacer seguimientos, clasificar respuestas y agendar reuniones).
-Ahora Colmena da un paso más: automatiza también procesos internos de sus clientes.
-Esta app es el primer proyecto de automatización de operaciones de Colmena para su
-cliente Mimper. Debe verse profesional, sencilla y en español.
+QUIÉN LO ENCARGA: Colmena (colmenalife.com), plataforma de agentes de IA que automatiza
+procesos de empresas.
 
-=====================================================================
-2. EL CLIENTE: MIMPER
-=====================================================================
-Mimper (mimper.es) es la marca comercial de MEMBRANAS IMPERMEABILIZANTES SLU
-(también "Mimper Spain"). Empresa española con más de 20 años distribuyendo
-sistemas de impermeabilización con poliuretano líquido y membranas, con 25 años de
-garantía en sus sistemas, distribuidor oficial de MARIS (Saint-Gobain) y con una red
-nacional de aplicadores certificados.
-Sus clientes son: aplicadores e impermeabilizadores, tiendas de pintura y droguerías,
-constructoras, empresas de rehabilitación y cubiertas, y algunos particulares, en toda
-España (península, Baleares, y ocasionalmente Canarias/Ceuta/Melilla/Andorra).
-Mimper envía la mercancía desde su almacén en Cataluña mediante la agencia de
-transporte JOVI TRANS-LOGISTIC (Jovitrans), que trabaja con la red de DB SCHENKER.
-Muchos de sus productos (poliuretanos, imprimaciones, disolventes) son mercancía
-peligrosa ADR, lo que añade recargos de transporte.
+CLIENTE: Mimper (mimper.es) = MEMBRANAS IMPERMEABILIZANTES SLU / Mimper Spain.
+Distribuidor español de sistemas de impermeabilización con poliuretano líquido y
+membranas (más de 20 años, distribuidor oficial MARIS de Saint-Gobain, red de
+aplicadores certificados). Vende a aplicadores, tiendas de pintura, constructoras y
+particulares en toda España. Envía desde su almacén en Cataluña con la agencia
+JOVI TRANS-LOGISTIC (Jovitrans, red DB Schenker). Muchos productos son mercancía
+peligrosa ADR.
 
-Hoy Mimper hace a mano dos tareas que le cuestan mucho tiempo:
-  A) Calcular cuánto cuesta enviar un pedido (y comprobar si la factura del
-     transportista está bien cobrada).
-  B) Preparar presupuestos para sus clientes (productos + cantidades + precios +
-     descuentos + transporte).
-La app tiene que automatizar las dos con IA, y además tener "agentes de control"
-que vigilen que todo es correcto antes de que llegue al cliente.
+HERRAMIENTAS QUE YA USA MIMPER Y QUE NO SE SUSTITUYEN:
+- PIPEDRIVE (CRM): los comerciales trabajan aquí. Cada presupuesto es un "deal".
+- SAGE 200 (ERP): fuente de verdad de clientes, artículos, precios/tarifas, descuentos,
+  stock, ofertas, pedidos, albaranes y facturas.
 
-=====================================================================
-3. USUARIOS Y PERMISOS
-=====================================================================
-- Administrador (Colmena / dirección de Mimper): ve y configura todo.
-- Comercial / Oficina Mimper: crea presupuestos, calcula transportes, sube facturas.
-- Solo lectura (dirección): ve paneles e informes.
-Login obligatorio. Nadie fuera de Mimper/Colmena puede ver datos.
+REGLAS DE ORO:
+1. NO construyas un CRM. NO crees pantallas de clientes, contactos, deals ni pipeline.
+   Los clientes y los productos se leen de Sage 200 (o de su exportación); los deals viven
+   en Pipedrive.
+2. El objetivo es que la INTERVENCIÓN HUMANA SEA LA MÍNIMA POSIBLE. Todo funciona solo,
+   por webhooks y tareas programadas. Un humano solo interviene en las EXCEPCIONES.
+3. Los cálculos de dinero (tarifas, descuentos, transporte, IVA, totales) se hacen con
+   código determinista, nunca con la IA. La IA solo interpreta textos, emails y PDFs.
+4. La IA nunca inventa precios, productos ni datos fiscales. Si falta algo, el caso pasa
+   a EXCEPCIÓN.
+5. Todo lo que hace el sistema queda en un REGISTRO (fecha, agente, deal/factura,
+   acción, resultado, motivo).
+6. Todo en español; importes en € con coma decimal.
 
-=====================================================================
-4. MÓDULO A — COSTES DE TRANSPORTE IA
-=====================================================================
-Objetivo: dado un envío (código postal destino, nº bultos, kg, m³, si es ADR y
-servicios extra), calcular al céntimo cuánto cobrará Jovitrans, y auditar las
-facturas reales de Jovitrans comparándolas con la tarifa.
+QUÉ AUTOMATIZA:
+A) PRESUPUESTOS IA: cuando un deal de Pipedrive llega a la etapa "Pedir presupuesto",
+   el sistema calcula el presupuesto completo (productos, cantidades, precios de Sage,
+   descuento del cliente, transporte), lo valida, lo escribe en el deal (productos,
+   valor, PDF, nota), lo envía al cliente si todo está OK, hace el seguimiento y, cuando
+   el cliente acepta, crea la oferta/pedido en Sage 200.
+B) COSTES DE TRANSPORTE IA: calcula el coste de transporte Jovitrans de cada
+   presupuesto y audita automáticamente las facturas de Jovitrans.
 
-4.1 La tarifa (archivo "Tarifa nacional Jovitrans 2026 MIMPER.xlsx")
-El Excel tiene estas hojas:
-  - "Sortides" (SALIDAS: del almacén de Mimper al cliente) -> tabla de precios.
-  - "Arribades" (LLEGADAS: del cliente al almacén de Mimper, devoluciones/recogidas)
-    -> misma estructura, precios más altos.
-  - "Zones" -> asigna una ZONA (1 a 16) a cada provincia según el código postal.
-  - "Condiciones Generales" y "Condiciones Especiales" -> recargos y servicios extra.
-  - Vigencia: del 09/01/2026 al 31/12/2026.
-Estructura de las tablas Sortides/Arribades:
-  - Filas = tramos de peso "Kg hasta": 10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-    150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000, 1250, 1500,
-    1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000.
-  - Columnas = zonas 1 a 13.
-  - Cada celda = precio en € por expedición (envío).
-Tabla de zonas (por los 2 primeros dígitos del código postal = provincia), ejemplos:
-  Barcelona 08 -> zona 1; Girona 17 -> 2; Lleida 25 y Tarragona 43 -> 3;
-  Madrid 28 -> 6; Sevilla 41 -> 7; Mallorca 07 -> 10; Ibiza/Menorca 07 -> 11;
-  Formentera 07 -> 12; Gibraltar -> 13; Ceuta -> 14; Melilla -> 15; Andorra -> 16.
-  OJO: todas las Baleares comparten el CP 07xxx; la isla se decide por el municipio
-  (pide al usuario la isla si el CP empieza por 07 y no se puede deducir).
-  Zonas 14, 15, 16 = "a consultar" (la app debe avisar y no inventar precio).
-IMPORTA LA TARIFA DESDE EL EXCEL que subiré; no inventes ningún precio.
+PANTALLAS (solo estas, nada más):
+1. Panel: KPIs (presupuestos generados / enviados solos / en excepción / aceptados,
+   importe, coste de transporte del mes, dinero recuperable de facturas) y la lista de
+   EXCEPCIONES pendientes con botón "Aprobar" y "Rechazar".
+2. Calculadora de transporte (para consultas sueltas).
+3. Auditoría de facturas Jovitrans.
+4. Reglas y límites de autonomía (editables por el admin).
+5. Registro de actividad.
+6. Configuración (conexiones, tarifas, % carburante mensual).
+Acceso con login; solo usuarios de Mimper y Colmena.
 
-4.2 Cómo se calcula el precio (regla verificada con facturas reales)
-  1. Peso volumétrico = m³ x 270 (Península) o m³ x 333 (Baleares, Ceuta,
-     Melilla, Gibraltar).
-  2. Peso tasable = el MAYOR entre el peso real (kg) y el peso volumétrico.
-  3. Se busca el primer tramo de la tabla cuyo "Kg hasta" sea >= peso tasable
-     (siempre se redondea HACIA ARRIBA al siguiente tramo).
-  4. Se busca la zona del código postal destino.
-  5. PORTE BASE = celda (tramo, zona) de la hoja Sortides (o Arribades si es recogida).
-     Ejemplo real: Barcelona (zona 1), 52 kg y 0,224 m³ -> volumétrico 60,5 kg ->
-     tasable 60,5 -> tramo 70 kg -> 13,81 € (coincide con la factura).
-  6. Si el peso tasable supera 5.000 kg -> "servicio DIRECT, pedir cotización".
-4.3 Recargos (se suman al porte base; cada uno configurable en la app):
-  - Recargo de carburante: % sobre el porte base. Cambia CADA MES. La app debe tener
-    una tabla "Carburante mensual" (mes, %) que el admin actualiza; si falta el % del
-    mes, avisar. (En las facturas de 2025 rondaba el 5,7 %.)
-  - Mercancía ADR: 15 % del porte, mínimo 5,00 € por envío.
-  - Seguro Jovi-Trans: 8 % del porte, mínimo 0,90 € (por defecto incluido, se puede
-    desactivar). Seguro a todo riesgo opcional: 0,6 % del valor de la mercancía,
-    mínimo 7,00 €.
-  - Reembolso (contra reembolso): 5 % del importe cobrado, mín 3 €, máx 90,15 €.
-  - Escaneo albarán cliente: 1,50 €/expedición. Manual booking: 2,00 €.
-  - Segunda entrega: 35 % del porte.
-  - Entrega a particulares: 20 €. Preaviso: 10 €.
-  - Fecha concertada: 20 % del porte. Fecha y hora concertada: 220 €.
-  - Grandes superficies: 20 % del porte + 7 € de gestión.
-  - Zonas costeras en temporada alta (1 junio – 30 septiembre): 20 % del porte.
-  - Despacho de aduanas (Andorra, Ceuta, Melilla, Gibraltar): 45 €.
-  - Acceso fuera de carretera convencional (masías, obras, caminos): por kg tasable,
-    mínimo 35 €.
-  - Manipulación adicional (antigua "ayuda de mozos") por tramos de kg: 31-300 kg 75 €,
-    301-500 90 €, 501-750 110 €, 751-1000 125 €, 1001-2000 180 €, 2001-2500 200 €.
-  - Paquetería ("System"): máx 5 bultos, 30 kg por bulto, 150 kg tasables por envío;
-    bulto de más de 30 kg sin paletizar: +50 €; si no cumple nº de bultos: +80 € de
-    paletización. Largos tipo 1 (hasta 4 m): +60 €; largos tipo 2 (hasta 6 m): +120 €.
-  - Palet no remontable: volumen = base x 2,20 m de alto.
-  Lee los importes exactos de las hojas de condiciones del Excel; si algo no cuadra con
-  esta lista, manda el Excel y muéstrame la diferencia.
-4.4 Pantalla "Calculadora de transporte"
-  Formulario: CP destino, municipio, nº bultos, kg, m³ (o largo x ancho x alto por
-  bulto y que calcule los m³), ¿ADR?, ¿salida o llegada?, valor de la mercancía,
-  servicios extra (checkboxes).
-  Resultado: zona, plazo de entrega (de la hoja Zones: 24, 24/48, 48, 48/72…),
-  peso tasable, tramo, porte base, cada recargo desglosado, total sin IVA y con IVA 21 %.
-  Botón "Usar en presupuesto".
-  También: campo de texto libre donde el usuario escribe en lenguaje natural
-  ("3 cubos de 25 kg de poliuretano a Sevilla 41007") y la IA rellena el formulario.
-4.5 Pantalla "Facturas de transporte" (auditoría)
-  - Subo los PDFs de factura de Jovitrans. La IA extrae TODAS las líneas.
-  - Formato de cada línea de factura (ejemplo):
-    "74/3505033/5 14/02 336 D SANT CUGAT DE PINTUR 08173 SANT CUGAT DEL VALL 1 165 0,410 22,99 6,31"
-    = nº expedición | fecha | referencia/albarán Mimper | D (salida) o R (retorno/llegada)
-    | cliente destino | código postal | población | bultos | kg | m³ | porte | recargos de
-    la línea (carburante + ADR).
-  - Al final de cada factura hay totales: "PORTES", "SOBREPORTE POR INCREMENTO
-    CARBURANTE", "SUPLEMENTO POR ADR". Las facturas con "_R" en el nombre son
-    rectificativas (abonos, importes negativos).
-  - Por cada línea, la app recalcula el precio con la tarifa y marca:
-      VERDE: coincide (diferencia <= 0,05 €).
-      ÁMBAR: diferencia pequeña o falta un dato.
-      ROJO: cobrado de más -> genera texto de reclamación a clientes@jovitrans.com.
-  - Panel: total facturado por mes, coste medio por envío, por zona, por cliente,
-    % ADR, envíos más caros y dinero recuperable por errores.
+En este primer paso crea solo la estructura de datos y las pantallas vacías. Los
+siguientes prompts detallan cada parte.
+```
 
-=====================================================================
-5. MÓDULO B — PRESUPUESTOS IA
-=====================================================================
-Objetivo: que un comercial pueda generar un presupuesto correcto en 1-2 minutos a
-partir de una petición del cliente (email, texto, WhatsApp, PDF de mediciones o
-nota de voz transcrita), con el formato y las condiciones de Mimper.
+### PROMPT 2 — MOTOR DE TRANSPORTE JOVITRANS
 
-5.1 Aprendizaje a partir de lo que ya existe
-  - Subiré: presupuestos antiguos (PDF, Excel, Word), la lista de precios/tarifa de
-    productos, y si existe, la plantilla de presupuesto y las condiciones comerciales.
-  - La IA debe leerlos y extraer a la base de datos:
-      * Catálogo de productos: referencia, nombre, familia (membrana, imprimación,
-        top coat, malla, disolvente, accesorio…), formato/envase (kg o litros por
-        envase), precio de tarifa, ¿es ADR?, peso por envase, volumen por envase
-        (m³), rendimiento/consumo (kg/m² por capa) si aparece.
-      * Clientes: nombre, CIF, tipo (aplicador, tienda, constructora, particular),
-        dirección, CP, descuento habitual.
-      * Histórico de presupuestos: fecha, cliente, líneas, descuentos aplicados,
-        transporte cobrado o no, total, estado (aceptado / no aceptado si se sabe).
-  - De ese histórico, la IA deduce y me ENSEÑA para que yo las valide (no las aplica
-    sin validar): descuento típico por tipo de cliente, cuándo se regala el
-    transporte (p. ej. a partir de cierto importe), márgenes, textos y condiciones
-    que siempre se ponen (validez, forma de pago, plazo de entrega, garantía).
-  - Pantalla "Reglas comerciales" donde el admin edita y aprueba esas reglas.
+```
+Crea las tablas TarifaTransporte (tipo salida/llegada, kg_hasta, zona, precio,
+vigencia_desde, vigencia_hasta), ZonaCP (prefijo_cp, provincia_isla, zona, plazo_horas),
+CondicionRecargo (nombre, tipo, valor, minimo, maximo, observaciones) y
+CarburanteMensual (mes, porcentaje). Voy a importar los datos desde CSV; no inventes
+ningún valor.
 
-5.2 Crear un presupuesto
-  1. El comercial pega la petición o sube el archivo y elige/crea el cliente.
-  2. La IA entiende qué pide. Si viene en m² (p. ej. "impermeabilizar una terraza de
-     80 m²"), calcula las cantidades de cada producto del sistema usando el
-     rendimiento por m² y el nº de capas, y redondea a envases completos.
-  3. Pone los precios del catálogo y aplica las reglas comerciales del cliente.
-  4. Calcula el peso y el volumen totales del pedido y llama al MÓDULO A para el
-     coste de transporte (con ADR si algún producto lo es). Según las reglas,
-     el transporte se repercute al cliente, se incluye o se regala.
-  5. Muestra un borrador editable: líneas, cantidades, precio, descuento, subtotal,
-     transporte, base imponible, IVA 21 %, total. También el margen estimado
-     (solo visible internamente).
-  6. Al aprobar: genera PDF con el diseño de la plantilla de Mimper (logo, datos
-     fiscales, nº de presupuesto correlativo, fecha, validez, condiciones) y
-     un borrador de email para enviarlo al cliente.
-  7. Estados: Borrador -> Pendiente de revisión -> Aprobado -> Enviado ->
-     Aceptado / Rechazado / Caducado.
-  Si falta información (CP, cantidad, producto ambiguo), la IA NO inventa: pregunta.
+Crea una función de backend "calcularTransporte" (reutilizable por los otros agentes):
+Entrada: cp_destino, municipio, bultos, kg, m3, es_adr, tipo (salida/llegada),
+valor_mercancia, servicios_extra[], fecha.
+1. Zona = por los 2 primeros dígitos del CP (ZonaCP). En Baleares (07) la isla decide la
+   zona (Mallorca 10, Menorca/Ibiza 11, Formentera 12); si no se puede deducir, devuelve
+   error "falta isla". Zonas 14, 15 y 16 = "a consultar" -> error, no inventes precio.
+2. Peso volumétrico = m3 x 270 (Península) o m3 x 333 (Baleares, Ceuta, Melilla, Gibraltar).
+3. Peso tasable = max(kg, peso volumétrico).
+4. Tramo = primer kg_hasta >= peso tasable. Si supera 5000 kg -> "servicio DIRECT, cotizar".
+5. Porte base = precio(tipo, tramo, zona) vigente en la fecha.
+6. Recargos: carburante % del mes (si falta el % del mes -> aviso); ADR 15% (mín. 5 €)
+   si es_adr; seguro Jovi-Trans 8% (mín. 0,90 €); y los servicios extra marcados según
+   CondicionRecargo.
+Salida: zona, plazo, peso tasable, tramo, porte base, recargos desglosados, total sin IVA
+y con IVA 21%, avisos.
 
-=====================================================================
-6. AGENTES DE IA DE CONTROL (supervisan los módulos)
-=====================================================================
-Crea estos agentes. Cada uno deja registro de lo que hace en una tabla
-"Registro de agentes" (fecha, agente, objeto revisado, resultado, motivo).
-Ningún agente envía nada a un cliente sin aprobación humana.
+Pantalla "Calculadora de transporte" que usa esta función. Prueba con estos casos
+(porte base, salida, sin recargos), que salen de facturas reales:
+- CP 08006, 52 kg, 0,224 m3 -> 13,81 €
+- CP 08020, 401 kg, 1,193 m3 -> 44,33 €
+- CP 08440, 186 kg, 1,090 m3 -> 31,65 €
+Si alguno no coincide, corrige antes de seguir.
+```
 
-  AG-T1 "Importador de tarifas": lee el Excel de tarifa, lo carga en la BD y comprueba
-       que no faltan tramos ni zonas. Avisa si la tarifa caduca en < 30 días.
-  AG-T2 "Auditor de facturas de transporte": revisa cada factura subida línea a línea
-       contra la tarifa (verde/ámbar/rojo) y prepara la reclamación de las rojas.
-  AG-T3 "Vigilante de carburante": cada mes recuerda actualizar el % de carburante y
-       detecta si el % facturado no coincide con el configurado.
-  AG-P1 "Presupuestador": genera el borrador de presupuesto (Módulo B).
-  AG-P2 "Revisor de presupuestos" (control de calidad, se ejecuta SIEMPRE antes de
-       pasar a "Aprobado"). Comprueba:
-         - precios = tarifa vigente del catálogo (o con descuento autorizado);
-         - descuento <= máximo permitido para ese cliente/tipo;
-         - margen >= mínimo configurado;
-         - cantidades coherentes con los m² y el rendimiento;
-         - transporte calculado e incluido según las reglas, ADR aplicado si toca;
-         - datos fiscales del cliente completos; sumas e IVA correctos;
-         - no hay productos descatalogados.
-       Resultado: APROBADO / APROBADO CON AVISOS / BLOQUEADO, con la lista de motivos.
-  AG-P3 "Seguimiento": presupuestos enviados sin respuesta a los 3, 7 y 14 días ->
-       propone email de seguimiento (lo envía un humano). Marca caducados.
-  AG-S1 "Supervisor / Informe semanal": cada lunes resume: presupuestos creados,
-       enviados, aceptados, importe, tasa de aceptación, coste de transporte del
-       mes, errores detectados en facturas y dinero recuperable, avisos pendientes.
+### PROMPT 3 — CONEXIÓN CON PIPEDRIVE + PRESUPUESTO AUTOMÁTICO
 
-=====================================================================
-7. DATOS (entidades) que debe tener la app
-=====================================================================
-TarifaTransporte (tipo salida/llegada, tramo_kg, zona, precio, vigencia),
-ZonaCP (prefijo CP, provincia/isla, zona, plazo), CondicionRecargo (nombre, tipo %,
-fijo o por kg, valor, mínimo, máximo), CarburanteMensual (mes, %),
-CalculoTransporte, FacturaTransporte, LineaFacturaTransporte (con precio esperado,
-diferencia y estado), Producto, Cliente, ReglaComercial, Presupuesto,
-LineaPresupuesto, ArchivoSubido, RegistroAgente, Usuario.
+```
+Conecta con la API de Pipedrive usando los secretos PIPEDRIVE_API_TOKEN y
+PIPEDRIVE_DOMAIN (API v1/v2: deals, persons, organizations, products, deal products,
+notes, activities, files, webhooks).
 
-=====================================================================
-8. PANTALLAS (menú lateral)
-=====================================================================
-Inicio (panel con KPIs y avisos de los agentes) · Calculadora de transporte ·
-Facturas de transporte · Tarifas de transporte · Presupuestos (lista + nuevo) ·
-Clientes · Productos · Histórico de presupuestos (subida de archivos) ·
-Reglas comerciales · Agentes (estado y registro) · Configuración.
+1. Al configurar, crea (si no existen) en el embudo de ventas las etapas:
+   "Pedir presupuesto", "Presupuesto en revisión", "Presupuesto enviado",
+   y usa Ganado/Perdido de Pipedrive.
+2. Registra un webhook de Pipedrive (deal actualizado) hacia una función de backend de
+   esta app. Cuando un deal entra en "Pedir presupuesto", ejecuta el AGENTE
+   PRESUPUESTADOR:
+   a) Lee el deal, su organización/persona, sus notas, emails y archivos adjuntos.
+   b) Identifica al cliente en el maestro de clientes de Sage (por CIF, email o nombre)
+      y toma su tarifa y su descuento. Si no se encuentra -> EXCEPCIÓN.
+   c) Interpreta con IA lo que pide. Si viene en m², calcula las cantidades por sistema
+      (rendimiento kg/m² x capas x m² + merma) y redondea a envases completos.
+   d) Pone los precios del maestro de artículos de Sage y aplica las reglas comerciales.
+   e) Suma pesos y volúmenes de los artículos y llama a calcularTransporte (ADR si algún
+      artículo lo es). Según las reglas, el transporte se cobra o se regala.
+   f) Calcula subtotal, descuentos, transporte, base, IVA 21% y total.
+3. AGENTE REVISOR (siempre después del Presupuestador): comprueba precios frente a la
+   tarifa, descuento <= máximo permitido, margen >= mínimo, cantidades coherentes,
+   transporte y ADR aplicados, datos fiscales completos, totales correctos y que no
+   haya artículos sin stock ni descatalogados.
+   Resultado: OK / OK CON AVISOS / BLOQUEADO + motivos.
+4. ESCRITURA EN PIPEDRIVE: añade las líneas como productos del deal (creando el producto
+   en Pipedrive con el mismo código de Sage si no existe), actualiza el valor del deal,
+   adjunta el PDF del presupuesto (plantilla de Mimper, numeración P-AAAA-0001) y deja
+   una nota con el desglose y los avisos.
+5. AUTONOMÍA:
+   - Si es OK y está dentro de los límites de autonomía (importe máximo, descuento
+     máximo, cliente existente), envía el presupuesto por email al cliente y mueve el
+     deal a "Presupuesto enviado". Sin intervención humana.
+   - Si no, mueve el deal a "Presupuesto en revisión", crea una actividad en Pipedrive
+     para el propietario del deal con los motivos y lo muestra en EXCEPCIONES del Panel.
+     Al pulsar "Aprobar" (en el Panel, o moviendo el deal a "Presupuesto enviado"),
+     continúa solo.
+   - Interruptor general "Modo prudente": si está activado, TODO pasa por revisión
+     (recomendado las primeras semanas).
+6. AGENTE SEGUIMIENTO (tarea diaria): deals en "Presupuesto enviado" sin respuesta a los
+   3, 7 y 14 días -> envía email de seguimiento y lo registra como nota. A los 30 días
+   -> marca el deal como perdido con motivo "sin respuesta" (configurable).
+```
 
-=====================================================================
-9. REGLAS DE CONSTRUCCIÓN
-=====================================================================
-- Todo en español. Importes en € con 2 decimales y coma decimal (formato español).
-- La IA nunca inventa precios, tarifas ni datos fiscales: si no hay dato, pregunta o
-  avisa.
-- Los cálculos de dinero (tarifa, recargos, IVA, totales) se hacen con lógica
-  determinista (código), NO con la IA. La IA solo interpreta textos y archivos.
-- Cada cálculo muestra el desglose para poder auditarlo.
-- Diseño limpio, azul y gris, que funcione bien en móvil.
-Empieza construyendo la estructura de datos y las pantallas. En los siguientes
-mensajes te pediré cada módulo en detalle.
+### PROMPT 4 — CONEXIÓN CON SAGE 200
+
+```
+Sage 200 es el ERP de Mimper y la fuente de verdad. Crea una capa "conectorSage" con
+tres modos intercambiables (se elige en Configuración), para poder empezar ya y mejorar
+después sin tocar los agentes:
+
+MODO 1 — EXPORTACIÓN (para empezar ya): el admin sube (o llega por email a diario) un
+Excel/CSV exportado de Sage con: Clientes (código, CIF, razón social, email, dirección,
+CP, tarifa, % descuento, forma de pago) y Artículos (código, descripción, familia,
+precio de tarifa, coste, stock, peso por envase, volumen por envase, es_ADR,
+rendimiento kg/m²). Se guarda como caché de solo lectura. Muestra la fecha de la
+última actualización y avisa si tiene más de 48 h.
+
+MODO 2 — API: si el partner de Sage habilita la API o los web services de Sage 200,
+usa SAGE_API_URL y SAGE_API_KEY (secretos) para leer clientes, artículos, precios y
+stock en tiempo real y para CREAR ofertas y pedidos de cliente.
+
+MODO 3 — PASARELA: un pequeño servicio instalado en el servidor de Mimper (lo
+proporciona Colmena o el partner de Sage) expone endpoints HTTPS seguros
+(/clientes, /articulos, /stock, /ofertas, /pedidos) con token. Usa SAGE_GATEWAY_URL y
+SAGE_GATEWAY_TOKEN.
+
+Funciones del conector: buscarCliente, obtenerArticulos, obtenerPrecio(cliente,
+artículo), obtenerStock, crearOferta(presupuesto), crearPedido(presupuesto).
+En MODO 1, crearOferta y crearPedido generan un archivo de importación para Sage y lo
+envían por email a administración (es la única tarea manual que queda hasta tener el
+modo 2 o 3).
+
+Cuando un deal pasa a GANADO en Pipedrive (webhook) -> crearPedido en Sage y guarda el
+número de pedido de Sage en un campo del deal.
+```
+
+### PROMPT 5 — AUDITORÍA AUTOMÁTICA DE FACTURAS JOVITRANS
+
+```
+AGENTE AUDITOR DE TRANSPORTE:
+1. Entrada automática: las facturas PDF de Jovitrans llegan a un buzón o carpeta
+   configurada; también se pueden subir a mano.
+2. Extrae cada línea. Formato de ejemplo:
+   "74/3505033/5 14/02 336 D SANT CUGAT DE PINTUR 08173 SANT CUGAT DEL VALL 1 165 0,410 22,99 6,31"
+   = nº expedición | fecha | referencia (nº de albarán de Mimper) | D salida / R retorno |
+   cliente | CP | población | bultos | kg | m³ | porte | recargos de la línea.
+   Al pie: PORTES, SOBREPORTE POR INCREMENTO CARBURANTE, SUPLEMENTO POR ADR.
+   Los archivos con "_R" son facturas rectificativas (abonos).
+3. Recalcula cada línea con calcularTransporte usando la tarifa vigente en su fecha.
+   VERDE (diferencia <= 0,05 €), ÁMBAR (falta tarifa de ese año o un dato), ROJO (cobrado
+   de más).
+4. Las ROJAS claras -> redacta y envía la reclamación a clientes@jovitrans.com (con
+   "Modo prudente" activado, solo la deja preparada como excepción).
+5. Asocia cada línea, por la referencia, al albarán o pedido de Sage y al deal de
+   Pipedrive -> coste real de transporte por pedido y por cliente, y margen real.
+6. Panel: coste por mes, por zona y por cliente, % ADR, top envíos más caros, total
+   recuperable y clientes donde el transporte se come el margen.
+```
+
+### PROMPT 6 — INFORME Y PRUEBAS
+
+```
+1. AGENTE SUPERVISOR: cada lunes a las 8:00 envía por email al admin un informe:
+   presupuestos generados, enviados solos, excepciones (y por qué), aceptados, importe,
+   tasa de aceptación, coste de transporte, errores de Jovitrans y dinero recuperado,
+   y propuesta de subir o bajar los límites de autonomía según los resultados.
+2. Pruebas: crea en Pipedrive un deal de prueba en "Pedir presupuesto" con la nota
+   "Impermeabilizar terraza de 80 m2 transitable, entrega en 41007 Sevilla" y
+   comprueba el flujo completo en modo prudente. Después, un caso que debe quedar
+   BLOQUEADO (descuento por encima del máximo). Enséñame el registro de cada paso y la
+   lista de lo que no funciona.
 ```
 
 ---
 
-### PROMPT 2 — IMPORTAR LA TARIFA Y CALCULADORA DE TRANSPORTE
+## Límites reales de Base44 en este proyecto (léelo antes de empezar)
 
-```
-Ahora implementa el Módulo A, parte 1:
-1. En "Tarifas de transporte", un botón para subir el Excel "Tarifa nacional Jovitrans
-   2026 MIMPER.xlsx". Extrae las hojas Sortides, Arribades y Zones y guarda cada celda
-   (tramo, zona, precio) en TarifaTransporte, y cada provincia en ZonaCP. Muestra una
-   tabla para revisarlo y un botón "Confirmar importación".
-2. Carga los recargos de las hojas "Condiciones Generales" y "Condiciones Especiales" en
-   CondicionRecargo y deja que el admin los edite.
-3. Implementa la Calculadora de transporte con la regla:
-   peso tasable = max(kg reales, m³ x 270 [x 333 en Baleares/Ceuta/Melilla/Gibraltar]),
-   tramo = primer "Kg hasta" >= peso tasable, precio = celda (tramo, zona) + recargos.
-4. Prueba con estos 3 casos, que deben dar exactamente este PORTE BASE (sin recargos):
-   - CP 08006 (Barcelona), 1 bulto, 52 kg, 0,224 m³ -> 13,81 €
-   - CP 08020 (Barcelona), 1 bulto, 401 kg, 1,193 m³ -> 44,33 €
-   - CP 08440 (Cardedeu), 1 bulto, 186 kg, 1,090 m³ -> 31,65 €
-   Si alguno no coincide, revisa la importación antes de seguir.
-```
-
-### PROMPT 3 — AUDITORÍA DE FACTURAS DE TRANSPORTE
-
-```
-Implementa la pantalla "Facturas de transporte" y el agente AG-T2:
-1. Subida múltiple de PDFs de facturas de Jovitrans.
-2. Extrae cada línea con el formato descrito (expedición, fecha, referencia, D/R,
-   cliente, CP, población, bultos, kg, m³, porte, recargos línea) y los totales de pie
-   (PORTES, SOBREPORTE CARBURANTE, SUPLEMENTO ADR). Detecta rectificativas (_R).
-3. Recalcula cada línea con la tarifa vigente en la fecha de la expedición
-   (ojo: las facturas de 2025 pueden llevar la tarifa 2025; si no está cargada, marca
-   la línea en ÁMBAR "tarifa del año no cargada", no en rojo).
-4. Semáforo verde/ámbar/rojo, filtros, exportar a Excel y texto de reclamación.
-5. Panel con: coste de transporte por mes, por zona y por cliente, coste medio por kg,
-   % de envíos ADR, top 10 envíos más caros, total recuperable.
-```
-
-### PROMPT 4 — PRESUPUESTOS IA
-
-```
-Implementa el Módulo B (Presupuestos IA) y los agentes AG-P1 y AG-P2:
-1. Pantalla "Histórico de presupuestos": subida múltiple de PDF/Excel/Word. La IA
-   extrae productos, clientes y presupuestos y los guarda (Producto, Cliente,
-   Presupuesto, LineaPresupuesto). Muestra lo extraído para revisarlo antes de guardar.
-2. Con el histórico, genera una propuesta de "Reglas comerciales" (descuentos por
-   tipo de cliente, cuándo se incluye el transporte, margen mínimo, validez, forma de
-   pago, textos fijos) y déjalas en estado "Pendiente de validar" hasta que el admin
-   las apruebe.
-3. Pantalla "Nuevo presupuesto" con el flujo descrito (petición en texto libre o
-   archivo -> borrador editable -> transporte automático del Módulo A -> revisión
-   AG-P2 -> PDF + email).
-4. Si se piden m², calcula cantidades con el rendimiento (kg/m² por capa x nº capas x
-   m², + 5 % de merma configurable) y redondea a envases completos. Muestra el cálculo.
-5. Numeración correlativa: P-AAAA-0001.
-```
-
-### PROMPT 5 — AGENTES DE CONTROL Y PANEL
-
-```
-Implementa los agentes AG-T1, AG-T3, AG-P3 y AG-S1, la pantalla "Agentes" y el panel
-de Inicio:
-- Pantalla Agentes: tarjeta por agente con estado, última ejecución, nº de avisos y
-  su registro. Botón "Ejecutar ahora".
-- Tareas programadas: AG-T3 el día 1 de cada mes; AG-P3 cada día a las 9:00;
-  AG-S1 cada lunes a las 8:00 (envía el informe por email al admin).
-- Panel de Inicio: presupuestos del mes (creados, enviados, aceptados, importe,
-  tasa de aceptación), coste de transporte del mes, errores de facturación y
-  dinero recuperable, y la lista de avisos pendientes de todos los agentes.
-```
-
-### PROMPT 6 — PRUEBAS FINALES
-
-```
-Haz una revisión completa de la app:
-1. Calcula de nuevo con la tarifa todas las líneas de las facturas subidas y dime qué
-   % coincide en verde. Si es menor del 95 %, investiga por qué (zonas, factor
-   volumétrico, tarifa de otro año, recargos) y propón la corrección.
-2. Coge 5 presupuestos antiguos del histórico, recrea cada uno desde su petición con
-   el Presupuestador y compara el resultado con el original (líneas, precios, transporte,
-   total). Enséñame las diferencias.
-3. Comprueba que el Revisor (AG-P2) bloquea un presupuesto con descuento por encima
-   del máximo y otro sin transporte cuando debería llevarlo.
-4. Lista lo que falta o no funciona.
-```
-
----
-
-## Notas para Colmena (no pegar en Base44)
-
-- **Lo verificado** con las facturas reales de Jovitrans: factor volumétrico de 270 kg/m³ en Península, redondeo al tramo superior y precio por celda (tramo, zona). Los tres casos del PROMPT 2 salen de facturas de julio de 2026.
-- **Lo pendiente de confirmar**: la columna de recargos de cada línea de factura parece ser carburante (~5,7 % en 2025) + ADR (15 %, mín. 5 €). En algunos envíos a Baleares hay un extra que todavía no se explica. Hay que confirmarlo con Mimper o con Jovitrans.
-- **Facturas de 2025**: se facturaron con la tarifa 2025, que no tenemos (solo la de 2026). Para auditar 2025 al céntimo, pedir a Mimper la tarifa 2025.
-- **Presupuestos**: el prompt está escrito sin haber visto todavía sus archivos. Cuando los tengamos, se ajustan los apartados 5.1 y 5.2 a su plantilla y sus reglas reales.
+- **Pipedrive**: sin problema. Está en la nube y tiene buena API y webhooks.
+- **Sage 200**: es la parte delicada. Si está instalado en el servidor de Mimper, Base44
+  no puede conectarse directamente. Por eso el PROMPT 4 empieza con **exportaciones**
+  (MODO 1) y deja preparados la API (MODO 2) y la pasarela (MODO 3). La pasarela es un
+  pequeño programa que se instala en su servidor; lo puede hacer Colmena o el partner
+  de Sage.
+- **Lectura del buzón de email**: depende de las integraciones disponibles en vuestro
+  plan de Base44. Si no se puede, se reenvían las facturas a mano o se usa una carpeta.
