@@ -13,8 +13,8 @@
    - `PIPEDRIVE_API_TOKEN`: en Pipedrive, Configuración personal → API.
    - `PIPEDRIVE_DOMAIN`: el subdominio, p. ej. `mimper` si entráis por `mimper.pipedrive.com`.
    - Los datos de Sage 200, cuando el partner de Sage los dé (ver PROMPT 4).
-4. Importa los CSV de tarifa de transporte (`TarifaTransporte.csv`, `ZonaCP.csv`,
-   `CondicionRecargo.csv`) en las tablas que cree el PROMPT 2.
+4. Importa los CSV de transporte en las tablas que cree el PROMPT 2: `TarifaTransporte.csv`,
+   `ZonaCP.csv`, `CondicionRecargo.csv`, `TablaCarburante.csv` y `PrecioGasoleoSemanal.csv`.
 
 ---
 
@@ -83,9 +83,30 @@ siguientes prompts detallan cada parte.
 ```
 Crea las tablas TarifaTransporte (tipo salida/llegada, kg_hasta, zona, precio,
 vigencia_desde, vigencia_hasta), ZonaCP (prefijo_cp, provincia_isla, zona, plazo_horas),
-CondicionRecargo (nombre, tipo, valor, minimo, maximo, observaciones) y
-CarburanteMensual (mes, porcentaje). Voy a importar los datos desde CSV; no inventes
+CondicionRecargo (nombre, tipo, valor, minimo, maximo, observaciones),
+TablaCarburante (pai_ih_desde, pai_ih_hasta, porcentaje, vigente_desde) y
+PrecioGasoleoSemanal (semana, pai, impuesto_hidrocarburos, pai_mas_ih,
+porcentaje_carburante_tabla_jovitrans). Voy a importar los datos desde CSV; no inventes
 ningún valor.
+
+RECARGO DE CARBURANTE AUTOMÁTICO (Real Decreto-ley 9/2026; Jovitrans lo aplica desde el
+01/07/2026):
+- Cada semana el Ministerio de Transportes publica el Excel "preciogasoleosemanalweb.xlsx"
+  (hoja PRECIOS_DEL_GASOLEO). La referencia es PAI + IH = columna "PVP sin IVA" (precio
+  antes de impuestos + impuesto sobre hidrocarburos, sin IVA y sin bonificación de
+  gasóleo profesional).
+- AGENTE CARBURANTE (tarea semanal, cada martes): descarga o recibe ese Excel (si no se
+  puede descargar solo, el admin lo sube en Configuración), guarda la nueva semana en
+  PrecioGasoleoSemanal y calcula el % con TablaCarburante (tramo en el que cae PAI+IH).
+  Si el precio cae fuera de la tabla (por debajo de 0,50001 o por encima de 1,75) ->
+  EXCEPCIÓN y no se inventa el %.
+- calcularTransporte usa el % del periodo del envío. Periodo por defecto = la semana de la
+  fecha del envío; debe ser configurable (semanal / media quincenal / media mensual)
+  porque falta que Jovitrans confirme qué periodo usa.
+- El Agente Auditor compara el carburante facturado en cada factura con el calculado y
+  avisa si difiere más de 0,5 puntos.
+- Envíos anteriores al 01/07/2026: el % sale de la factura (sistema antiguo); no se
+  recalcula.
 
 Crea una función de backend "calcularTransporte" (reutilizable por los otros agentes):
 Entrada: cp_destino, municipio, bultos, kg, m3, es_adr, tipo (salida/llegada),
@@ -97,9 +118,11 @@ valor_mercancia, servicios_extra[], fecha.
 3. Peso tasable = max(kg, peso volumétrico).
 4. Tramo = primer kg_hasta >= peso tasable. Si supera 5000 kg -> "servicio DIRECT, cotizar".
 5. Porte base = precio(tipo, tramo, zona) vigente en la fecha.
-6. Recargos: carburante % del mes (si falta el % del mes -> aviso); ADR 15% (mín. 5 €)
-   si es_adr; seguro Jovi-Trans 8% (mín. 0,90 €); y los servicios extra marcados según
-   CondicionRecargo.
+6. Recargos: carburante automático (ver arriba); ADR 15% (mín. 5 €) si es_adr; seguro
+   Jovi-Trans 8% (mín. 0,90 €); tasa de transición energética (0,50 €/expedición, a
+   confirmar); y los servicios extra marcados según CondicionRecargo.
+   Envíos internacionales (p. ej. Portugal) llevan conceptos propios (transporte
+   internacional, BUNKER SURCHARGE, MOBILITY PACKAGE) -> EXCEPCIÓN "cotizar".
 Salida: zona, plazo, peso tasable, tramo, porte base, recargos desglosados, total sin IVA
 y con IVA 21%, avisos.
 
