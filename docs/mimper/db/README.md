@@ -29,3 +29,27 @@ Provat en local: pressupost correcte → `verificat`; línia que no quadra i sen
 ## Usuari de base de dades per a n8n
 
 Rol `n8n_mimper` (LOGIN, sense contrasenya fins que la posi l'administrador): pot llegir, inserir i actualitzar a l'esquema `mimper` i executar-ne les funcions. **No pot esborrar.**
+
+## Migracions aplicades a Supabase (projecte `mimper`, ref `easdizdduysporxewsrp`)
+
+| Migració | Contingut |
+|---|---|
+| 001a–001e | Esquema `mimper` (23 taules), tipus, rols `mimper_lectura` i `n8n_mimper` |
+| 002 | `calcular_transport` |
+| 003a–003b | Funcions d'importació documental (WF01) |
+| 004 | `estimar_transport`, `carregar_gasoil` (WF02) |
+| 005 | `context_pressupost`, `crear_esborrany_pressupost`, `aplicar_transport_pressupost` (WF03) |
+| 006 | `sync_organitzacions_pipedrive`, `sync_deals_pipedrive` (WF04) |
+| 007 | Taula `seguiments`, `pressupostos_per_seguir`, `registrar_seguiment` (WF05) |
+| 008 | `auditar_linia_transport`, `importar_factura_transport` (WF06) |
+| 009 | `informe_setmanal` (WF07) |
+| 010 | `permisos_jarvis`, `jarvis_consulta` (JARVIS, només lectura) |
+
+El text exacte de cada migració és a `supabase_migrations.schema_migrations` (columna `statements`) i es pot exportar amb `supabase db dump --schema mimper`.
+
+## Proves fetes
+
+- Calculadora: 4/4 ports base iguals a factura (inclou Eivissa ×333).
+- Auditoria de factures: **40/40 línies reals de juliol 2026 en verd** (inclou una devolució i dues línies d'Eivissa).
+- Lector de factures (regex): 3.609 de 3.624 línies reconegudes a 47 PDFs (99,6 %); les 15 restants són internacionals sense preu.
+- Pressupost: 4 × 152,40 € amb 10 % dte = 548,64 €; + transport 30,21 € → base 578,85 €, IVA 121,56 €, total 700,41 €.
